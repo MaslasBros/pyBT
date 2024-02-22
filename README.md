@@ -33,12 +33,12 @@ There are also runtime visualisation tools - refer to the [py_trees_ros_viewer/R
 * `2.0.x` - blackboards v2 with namespaces, access permissions and key tracking
 * `2.1.x` - Chooser deprecated, api housekeeping
 
-| | Devel | 2.1.x | 2.0.x | 1.2.x | 0.7.x | 0.6.x |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Sources | [![devel][sources-devel-image]][sources-devel] | [![2.1.x][sources-2.1.x-image]][sources-2.1.x] | [![2.0.x][sources-2.0.x-image]][sources-2.0.x] | [![1.2.x][sources-1.2.x-image]][sources-1.2.x] | [![0.7.x][sources-0.7.x-image]][sources-0.7.x] | [![0.6.x][sources-0.6.x-image]][sources-0.6.x]
-| Compatibility | [![Python 3.6][python36-image]][python36-docs] | [![Python 3.6][python36-image]][python36-docs] | [![Python 3.6][python36-image]][python36-docs] | [![Python 3.6][python36-image]][python36-docs] | [![Python 3.6][python36-image]][python36-docs] | [![Python 2.7][python27-image]][python27-docs]
-| CI | [![devel-Status][devel-build-status-image]][devel-build-status] | [![2.1.x-Status][2.1.x-build-status-image]][2.1.x-build-status] | [![2.0.x-Status][2.0.x-build-status-image]][2.0.x-build-status] | [![1.2.x-Status][1.2.x-build-status-image]][1.2.x-build-status] | [![0.7.x-Status][0.7.x-build-status-image]][0.7.x-build-status] | [![0.6.x-Status][0.6.x-build-status-image]][0.6.x-build-status] 
-| Documentation | [![devel-Docs][rtd-devel-image]][docs-devel] | [![2.1.x-Docs][rtd-2.1.x-image]][docs-2.1.x] | [![2.0.x-Docs][rtd-2.0.x-image]][docs-2.0.x] | [![1.2.x-Docs][rtd-1.2.x-image]][docs-1.2.x] | [![0.7.x-Docs][rtd-0.7.x-image]][docs-0.7.x] | [![0.6.x-Docs][rtd-0.6.x-image]][docs-0.6.x]
+|               | Devel                                                           | 2.1.x                                                           | 2.0.x                                                           | 1.2.x                                                           | 0.7.x                                                           | 0.6.x                                                           |
+|:-------------:|:---------------------------------------------------------------:|:---------------------------------------------------------------:|:---------------------------------------------------------------:|:---------------------------------------------------------------:|:---------------------------------------------------------------:|:---------------------------------------------------------------:|
+| Sources       | [![devel][sources-devel-image]][sources-devel]                  | [![2.1.x][sources-2.1.x-image]][sources-2.1.x]                  | [![2.0.x][sources-2.0.x-image]][sources-2.0.x]                  | [![1.2.x][sources-1.2.x-image]][sources-1.2.x]                  | [![0.7.x][sources-0.7.x-image]][sources-0.7.x]                  | [![0.6.x][sources-0.6.x-image]][sources-0.6.x]                  |
+| Compatibility | [![Python 3.6][python36-image]][python36-docs]                  | [![Python 3.6][python36-image]][python36-docs]                  | [![Python 3.6][python36-image]][python36-docs]                  | [![Python 3.6][python36-image]][python36-docs]                  | [![Python 3.6][python36-image]][python36-docs]                  | [![Python 2.7][python27-image]][python27-docs]                  |
+| CI            | [![devel-Status][devel-build-status-image]][devel-build-status] | [![2.1.x-Status][2.1.x-build-status-image]][2.1.x-build-status] | [![2.0.x-Status][2.0.x-build-status-image]][2.0.x-build-status] | [![1.2.x-Status][1.2.x-build-status-image]][1.2.x-build-status] | [![0.7.x-Status][0.7.x-build-status-image]][0.7.x-build-status] | [![0.6.x-Status][0.6.x-build-status-image]][0.6.x-build-status] |
+| Documentation | [![devel-Docs][rtd-devel-image]][docs-devel]                    | [![2.1.x-Docs][rtd-2.1.x-image]][docs-2.1.x]                    | [![2.0.x-Docs][rtd-2.0.x-image]][docs-2.0.x]                    | [![1.2.x-Docs][rtd-1.2.x-image]][docs-1.2.x]                    | [![0.7.x-Docs][rtd-0.7.x-image]][docs-0.7.x]                    | [![0.6.x-Docs][rtd-0.6.x-image]][docs-0.6.x]                    |
 
 ## Installation
 
@@ -80,7 +80,6 @@ $ sudo apt install ros-<rosdistro>-py-trees
 ## PyTrees-ROS Ecosystem
 
 See the `py_trees_ros` [README](https://github.com/splintered-reality/py_trees_ros/blob/devel/README.md) for the latest information on pytrees packages in the ROS ecosystem and their status.
-
 
 [license-image]: https://img.shields.io/badge/License-BSD%203--Clause-orange.svg?style=plastic
 [license]: LICENSE
