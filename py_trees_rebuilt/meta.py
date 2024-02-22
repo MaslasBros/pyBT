@@ -1,28 +1,15 @@
-#!/usr/bin/env python
 #
 # License: BSD
 #   https://raw.githubusercontent.com/splintered-reality/py_trees/devel/LICENSE
 #
-##############################################################################
-# Documentation
-##############################################################################
 
 """
 Meta methods to create behaviours without needing to create the behaviours
 themselves.
 """
 
-##############################################################################
-# Imports
-##############################################################################
-
 from . import behaviour
 from . import common
-
-##############################################################################
-# Utility Methods
-##############################################################################
-
 
 def create_behaviour_from_function(func):
     """

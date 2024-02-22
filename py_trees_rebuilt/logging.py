@@ -1,51 +1,18 @@
-#!/usr/bin/env python
 #
 # License: BSD
 #   https://raw.githubusercontent.com/splintered-reality/py_trees/devel/LICENSE
 #
-##############################################################################
-# Documentation
-##############################################################################
-
-"""
-.. module:: loggers
-   :synopsis: Logging facilities in py_trees.
-
-Oh my spaghettified magnificence,
-Bless my noggin with a tickle from your noodly appendages!
-"""
-
-##############################################################################
-# Imports
-##############################################################################
-
 from enum import IntEnum
 
-from . import console
+""" import typing
+import uuid
 
-##############################################################################
-# Logging
-##############################################################################
-
-# I'd really prefer to use python logging facilities, but rospy logging
-# on top of python logging kills it.
-#
-# Could still use it here, and would actually be useful if I could
-# integrate it with nosetests, but for now, this will do.
-# Note, you can get colour with python logging, but its tricky;
-#
-#   http://stackoverflow.com/questions/384076/how-can-i-color-python-logging-output
-#
-# python way:
-#
-#     import logging
-#         logging.getLogger("py_trees.Behaviour")
-#         logging.basicConfig(level=logging.DEBUG)
-#
-##############################################################################
-# Level
-##############################################################################
-
+from . import behaviour
+from . import blackboard
+from . import common
+from . import composites
+from . import decorators
+from . import utilities """
 
 # levels
 class Level(IntEnum):
@@ -62,10 +29,76 @@ class Level(IntEnum):
 # module variable
 level = Level.INFO
 
-##############################################################################
-# Logger Class
-##############################################################################
+def banner(msg):
+    print("\n" + 80 * "*")
+    print("* " + msg.center(80))
+    print( 80 * "*" + "\n")
 
+
+def debug(msg):
+    print(msg)
+
+
+def warning(msg):
+    print(msg)
+
+
+def info(msg):
+    print(msg)
+
+
+def error(msg):
+    print(msg)
+
+
+def logdebug(message):
+    '''
+    Prefixes ``[DEBUG]`` and colours the message green.
+
+    Args:
+        message (:obj:`str`): message to log.
+    '''
+    print("[DEBUG] " + message)
+
+
+def loginfo(message):
+    '''
+    Prefixes ``[ INFO]`` to the message.
+
+    Args:
+        message (:obj:`str`): message to log.
+    '''
+    print("[ INFO] " + message)
+
+
+def logwarn(message):
+    '''
+    Prefixes ``[ WARN]`` and colours the message yellow.
+
+    Args:
+        message (:obj:`str`): message to log.
+    '''
+    print("[ WARN] " + message)
+
+
+def logerror(message):
+    '''
+    Prefixes ``[ERROR]`` and colours the message red.
+
+    Args:
+        message (:obj:`str`): message to log.
+    '''
+    print("[ERROR] " + message)
+
+
+def logfatal(message):
+    '''
+    Prefixes ``[FATAL]`` and colours the message bold red.
+
+    Args:
+        message (:obj:`str`): message to log.
+    '''
+    print("[FATAL] " + message)
 
 class Logger(object):
     """
@@ -79,17 +112,17 @@ class Logger(object):
     def debug(self, msg):
         global level
         if level < Level.INFO:
-            console.logdebug(self.prefix + msg)
+            logdebug(self.prefix + msg)
 
     def info(self, msg):
         global level
         if level < Level.WARN:
-            console.loginfo(self.prefix + msg)
+            loginfo(self.prefix + msg)
 
     def warning(self, msg):
         global level
         if level < Level.ERROR:
-            console.logwarn(self.prefix + msg)
+            logwarn(self.prefix + msg)
 
     def error(self, msg):
-        console.logerror(self.prefix + msg)
+        logerror(self.prefix + msg)

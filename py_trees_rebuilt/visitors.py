@@ -22,7 +22,7 @@ runs its own method on the behaviour to do as it wishes - logging, introspecting
 ##############################################################################
 
 from . import blackboard
-from . import display
+#from . import display
 
 ##############################################################################
 # Visitors

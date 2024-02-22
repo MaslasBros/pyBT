@@ -70,7 +70,6 @@ import typing
 import uuid
 
 from . import common
-from . import console
 from . import utilities
 
 ##############################################################################
@@ -158,7 +157,7 @@ class ActivityStream(object):
         Args:
             maximum_size: pop items from the stream if this size is exceeded
         """
-        self.data: typing.List[ActivityItem] = []
+        self.data = []
         self.maximum_size = maximum_size
 
     def push(self, activity_item: ActivityItem):
@@ -195,11 +194,11 @@ class Blackboard(object):
         Blackboard.activity_stream (ActivityStream): logged activity
         Blackboard.separator (char): namespace separator character
     """
-    storage: typing.Dict[str, typing.Any] = {}  # key-value storage
-    metadata: typing.Dict[str, KeyMetaData] = {}  # key-metadata information
-    clients: typing.Dict[uuid.UUID, str] = {}   # client id-name pairs
-    activity_stream: typing.Optional[ActivityStream] = None
-    separator: str = "/"
+    storage = {}  # key-value storage
+    metadata = {}  # key-metadata information
+    clients = {}   # client id-name pairs
+    activity_stream = None
+    separator = "/"
 
     @staticmethod
     def keys() -> typing.Set[str]:
@@ -1120,20 +1119,20 @@ class Client(object):
 
     def __str__(self):
         indent = "  "
-        s = console.green + "Blackboard Client" + console.reset + "\n"
-        s += console.white + indent + "Client Data" + console.reset + "\n"
+        s = "Blackboard Client" + "\n"
+        s += indent + "Client Data" + "\n"
         keys = ["name", "namespace", "unique_identifier", "read", "write", "exclusive"]
         s += self._stringify_key_value_pairs(keys, self.__dict__, 2 * indent)
         keys = {k for k, v in self.remappings.items() if k != v}
         if keys:
-            s += console.white + indent + "Remappings" + console.reset + "\n"
+            s +=  indent + "Remappings"  + "\n"
             s += self._stringify_key_value_pairs(
                 keys=keys,
                 key_value_dict=self.remappings,
                 indent=2 * indent,
-                separator=console.right_arrow
+                separator=u'\u2192'
             )
-        s += console.white + indent + "Variables" + console.reset + "\n"
+        s += indent + "Variables" + "\n"
         keys = self.remappings.values()
         s += self._stringify_key_value_pairs(keys, Blackboard.storage, 2 * indent)
         return s
@@ -1148,14 +1147,13 @@ class Client(object):
                 value = key_value_dict[key]
                 lines = ('{0}'.format(value)).split('\n')
                 if len(lines) > 1:
-                    s += console.cyan + indent + '{0: <{1}}'.format(key, max_length + 1) + console.reset + separator + "\n"
+                    s += indent + '{0: <{1}}'.format(key, max_length + 1) + separator + "\n"
                     for line in lines:
-                        s += console.yellow + indent + "  {0}\n".format(line) + console.reset
+                        s += indent + "  {0}\n".format(line)
                 else:
-                    s += console.cyan + indent + '{0: <{1}}'.format(key, max_length + 1) + console.reset + separator + " " + console.yellow + '{0}\n'.format(value) + console.reset
+                    s += indent + '{0: <{1}}'.format(key, max_length + 1) + separator + " " + '{0}\n'.format(value)
             except KeyError:
-                s += console.cyan + indent + '{0: <{1}}'.format(key, max_length + 1) + console.reset + separator + " " + console.yellow + "-\n" + console.reset
-        s += console.reset
+                s += indent + '{0: <{1}}'.format(key, max_length + 1) + separator + " " + "-\n"
         return s
 
     def unregister(self, clear: bool=True):

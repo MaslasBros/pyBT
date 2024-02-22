@@ -67,13 +67,13 @@ class Behaviour(object):
         if not isinstance(name, str):
             raise TypeError("a behaviour name should be a string, but you passed in {}".format(type(name)))
         self.id = uuid.uuid4()  # used to uniquely identify this node (helps with removing children from a tree)
-        self.name: str = name
-        self.blackboards: typing.List[blackboard.Client] = []
+        self.name = name #type:str
+        self.blackboards = [] #List[blackboard.Client]
         self.qualified_name = "{}/{}".format(self.__class__.__qualname__, self.name)  # convenience
         self.status = common.Status.INVALID
         self.iterator = self.tick()
-        self.parent: typing.Optional[Behaviour] = None  # will get set if a behaviour is added to a composite
-        self.children: typing.List[Behaviour] = []  # only set by composite behaviours
+        self.parent = None  # will get set if a behaviour is added to a composite
+        self.children = []  # only set by composite behaviours
         self.logger = logging.Logger(name)
         self.feedback_message = ""  # useful for debugging, or human readable updates, but not necessary to implement
         self.blackbox_level = common.BlackBoxLevel.NOT_A_BLACKBOX
