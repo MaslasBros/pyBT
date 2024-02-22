@@ -34,7 +34,7 @@ import typing
 
 from . import behaviour
 from . import common
-from . import composites
+from .nodes import composite
 from . import visitors
 
 CONTINUOUS_TICK_TOCK = -1

@@ -24,8 +24,8 @@ from . import behaviour
 from . import behaviours
 from . import blackboard
 from . import common
-from . import composites
-from . import decorators
+from .nodes import sequence as seq, selector as sel, parallel as par
+from .nodes import statusToBlackboard as sta, inverter as inv
 
 ##############################################################################
 # Creational Methods
@@ -71,9 +71,9 @@ def pick_up_where_you_left_off(
     Returns:
         :class:`~py_trees.behaviour.Behaviour`: root of the generated subtree
     """
-    root = composites.Sequence(name=name)
+    root = seq.Sequence(name=name)
     for task in tasks:
-        task_selector = composites.Selector(name="Do or Don't")
+        task_selector = sel.Selector(name="Do or Don't")
         task_guard = behaviours.CheckBlackboardVariableValue(
             name="Done?",
             check=common.ComparisonExpression(
@@ -82,7 +82,7 @@ def pick_up_where_you_left_off(
                 operator=operator.eq
             )
         )
-        sequence = composites.Sequence(name="Worker")
+        sequence = seq.Sequence(name="Worker")
         mark_task_done = behaviours.SetBlackboardVariable(
             name="Mark\n" + task.name.lower().replace(" ", "_") + "_done",
             variable_name=task.name.lower().replace(" ", "_") + "_done",
@@ -156,13 +156,13 @@ def eternal_guard(
             blackboard_variable_names.append(blackboard_namespace + "_" + str(unique_id) + "_condition" + suffix)
             counter += 1
     # build the tree
-    root = composites.Parallel(
+    root = par.Parallel(
         name=name,
         policy=common.ParallelPolicy.SuccessOnAll(synchronise=False)
     )
-    guarded_tasks = composites.Selector(name="Guarded Tasks")
+    guarded_tasks = sel.Selector(name="Guarded Tasks")
     for condition, blackboard_variable_name in zip(conditions, blackboard_variable_names):
-        decorated_condition = decorators.StatusToBlackboard(
+        decorated_condition = sta.StatusToBlackboard(
             name="StatusToBB",
             child=condition,
             variable_name=blackboard_variable_name
@@ -246,8 +246,8 @@ def either_or(
         raise ValueError("Must be the same number of conditions as subtrees [{} != {}]".format(
             len(conditions), len(subtrees))
         )
-    root = composites.Sequence(name=name)
-    configured_namespace: str = namespace if namespace is not None else \
+    root = seq.Sequence(name=name)
+    configured_namespace = namespace if namespace is not None else \
         blackboard.Blackboard.separator + name.lower().replace("-", "_").replace(" ", "_") + \
         blackboard.Blackboard.separator + str(root.id).replace("-", "_").replace(" ", "_") + \
         blackboard.Blackboard.separator + "conditions"
@@ -257,9 +257,9 @@ def either_or(
         operator=operator.xor,
         namespace=configured_namespace
     )
-    chooser = composites.Selector(name="Chooser")
+    chooser = sel.Selector(name="Chooser")
     for counter in range(1, len(conditions) + 1):
-        sequence = composites.Sequence(name="Option {}".format(str(counter)))
+        sequence = seq.Sequence(name="Option {}".format(str(counter)))
         variable_name = configured_namespace + blackboard.Blackboard.separator + str(counter)
         disabled = behaviours.CheckBlackboardVariableValue(
             name="Enabled?",
@@ -304,10 +304,10 @@ def oneshot(
 
     .. seealso:: :class:`py_trees.decorators.OneShot`
     """
-    subtree_root = composites.Selector(name=name)
-    oneshot_with_guard = composites.Sequence(
+    subtree_root = sel.Selector(name=name)
+    oneshot_with_guard = seq.Sequence(
         name="Oneshot w/ Guard")
-    check_not_done = decorators.Inverter(
+    check_not_done = inv.Inverter(
         name="Not Completed?",
         child=behaviours.CheckBlackboardVariableExists(
             name="Completed?",
@@ -320,19 +320,19 @@ def oneshot(
         variable_value=common.Status.SUCCESS
     )
     # If it's a sequence, don't double-nest it in a redundant manner
-    if isinstance(behaviour, composites.Sequence):
+    if isinstance(behaviour, seq.Sequence):
         behaviour.add_child(set_flag_on_success)
         sequence = behaviour
     else:
-        sequence = composites.Sequence(name="OneShot")
+        sequence = seq.Sequence(name="OneShot")
         sequence.add_children([behaviour, set_flag_on_success])
 
     oneshot_with_guard.add_child(check_not_done)
     if policy == common.OneShotPolicy.ON_SUCCESSFUL_COMPLETION:
         oneshot_with_guard.add_child(sequence)
     else:  # ON_COMPLETION (SUCCESS || FAILURE)
-        oneshot_handler = composites.Selector(name="Oneshot Handler")
-        bookkeeping = composites.Sequence(name="Bookkeeping")
+        oneshot_handler = sel.Selector(name="Oneshot Handler")
+        bookkeeping = seq.Sequence(name="Bookkeeping")
         set_flag_on_failure = behaviours.SetBlackboardVariable(
             name="Mark Done\n[FAILURE]",
             variable_name=variable_name,
