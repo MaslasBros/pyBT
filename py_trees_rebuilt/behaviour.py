@@ -20,7 +20,7 @@ import re
 import typing
 import uuid
 
-from . import blackboard
+from .bb import client as cl
 from . import common
 from . import logging
 
@@ -196,7 +196,7 @@ class Behaviour(object):
             self,
             name: str=None,
             namespace: str=None
-    ) -> blackboard.Client:
+    ) -> cl.Client:
         """
         Create and attach a blackboard to this behaviour.
 
@@ -210,7 +210,7 @@ class Behaviour(object):
         if name is None:
             count = len(self.blackboards)
             name = self.name if (count == 0) else self.name + "-{}".format(count)
-        new_blackboard = blackboard.Client(
+        new_blackboard = cl.Client(
             name=name,
             namespace=namespace
         )

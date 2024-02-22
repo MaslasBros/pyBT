@@ -79,7 +79,7 @@ combination of behaviours to affect the non-blocking characteristics.
 from typing import Callable, Union  # noqa
 
 from .. import behaviour
-from .. import blackboard
+from ..bb import blackboard
 from .. import common
 
 ##############################################################################

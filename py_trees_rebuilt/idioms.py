@@ -21,11 +21,22 @@ import typing
 import uuid
 
 from . import behaviour
-from . import behaviours
-from . import blackboard
 from . import common
+
+#Node specific
 from .nodes import sequence as seq, selector as sel, parallel as par
 from .nodes import statusToBlackboard as sta, inverter as inv
+
+#Behaviours specific
+from .behaviours import behaviours
+from .behaviours import checkBlackboardVariableValue as cbvv
+from .behaviours import checkBlackboardVariableValues as cbvvs
+from .behaviours import checkBlackboardVariableExists as cbve
+from .behaviours import setBlackboardVariable as sbv
+from .behaviours import unsetBlackboardVariable as ubv
+
+#Blackboard specific
+from .bb import blackboard
 
 ##############################################################################
 # Creational Methods
@@ -74,7 +85,7 @@ def pick_up_where_you_left_off(
     root = seq.Sequence(name=name)
     for task in tasks:
         task_selector = sel.Selector(name="Do or Don't")
-        task_guard = behaviours.CheckBlackboardVariableValue(
+        task_guard = cbvv.CheckBlackboardVariableValue(
             name="Done?",
             check=common.ComparisonExpression(
                 variable=task.name.lower().replace(" ", "_") + "_done",
@@ -83,7 +94,7 @@ def pick_up_where_you_left_off(
             )
         )
         sequence = seq.Sequence(name="Worker")
-        mark_task_done = behaviours.SetBlackboardVariable(
+        mark_task_done = sbv.SetBlackboardVariable(
             name="Mark\n" + task.name.lower().replace(" ", "_") + "_done",
             variable_name=task.name.lower().replace(" ", "_") + "_done",
             variable_value=True
@@ -92,7 +103,7 @@ def pick_up_where_you_left_off(
         task_selector.add_children([task_guard, sequence])
         root.add_child(task_selector)
     for task in tasks:
-        clear_mark_done = behaviours.UnsetBlackboardVariable(
+        clear_mark_done = ubv.UnsetBlackboardVariable(
             name="Clear\n" + task.name.lower().replace(" ", "_") + "_done",
             key=task.name.lower().replace(" ", "_") + "_done"
         )
@@ -169,7 +180,7 @@ def eternal_guard(
         )
         root.add_child(decorated_condition)
         guarded_tasks.add_child(
-            behaviours.CheckBlackboardVariableValue(
+            cbvv.CheckBlackboardVariableValue(
                 name="Abort on\n{}".format(condition.name),
                 check=common.ComparisonExpression(
                     variable=blackboard_variable_name,
@@ -251,7 +262,7 @@ def either_or(
         blackboard.Blackboard.separator + name.lower().replace("-", "_").replace(" ", "_") + \
         blackboard.Blackboard.separator + str(root.id).replace("-", "_").replace(" ", "_") + \
         blackboard.Blackboard.separator + "conditions"
-    xor = behaviours.CheckBlackboardVariableValues(
+    xor = cbvvs.CheckBlackboardVariableValues(
         name="XOR",
         checks=conditions,
         operator=operator.xor,
@@ -261,7 +272,7 @@ def either_or(
     for counter in range(1, len(conditions) + 1):
         sequence = seq.Sequence(name="Option {}".format(str(counter)))
         variable_name = configured_namespace + blackboard.Blackboard.separator + str(counter)
-        disabled = behaviours.CheckBlackboardVariableValue(
+        disabled = cbvv.CheckBlackboardVariableValue(
             name="Enabled?",
             check=common.ComparisonExpression(
                 variable=variable_name,
@@ -309,12 +320,12 @@ def oneshot(
         name="Oneshot w/ Guard")
     check_not_done = inv.Inverter(
         name="Not Completed?",
-        child=behaviours.CheckBlackboardVariableExists(
+        child=cbve.CheckBlackboardVariableExists(
             name="Completed?",
             variable_name=variable_name
         )
     )
-    set_flag_on_success = behaviours.SetBlackboardVariable(
+    set_flag_on_success = sbv.SetBlackboardVariable(
         name="Mark Done\n[SUCCESS]",
         variable_name=variable_name,
         variable_value=common.Status.SUCCESS
@@ -333,7 +344,7 @@ def oneshot(
     else:  # ON_COMPLETION (SUCCESS || FAILURE)
         oneshot_handler = sel.Selector(name="Oneshot Handler")
         bookkeeping = seq.Sequence(name="Bookkeeping")
-        set_flag_on_failure = behaviours.SetBlackboardVariable(
+        set_flag_on_failure = sbv.SetBlackboardVariable(
             name="Mark Done\n[FAILURE]",
             variable_name=variable_name,
             variable_value=common.Status.FAILURE
@@ -341,11 +352,11 @@ def oneshot(
         bookkeeping.add_children(
             [set_flag_on_failure,
              behaviours.Failure(name="Failure")
-             ])
+            ])
         oneshot_handler.add_children([sequence, bookkeeping])
         oneshot_with_guard.add_child(oneshot_handler)
 
-    oneshot_result = behaviours.CheckBlackboardVariableValue(
+    oneshot_result = cbvv.CheckBlackboardVariableValue(
         name="Oneshot Result",
         check=common.ComparisonExpression(
             variable=variable_name,

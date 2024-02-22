@@ -15,8 +15,10 @@ This is the top-level namespace of the py_trees package.
 
 from . import behaviour  # noqa
 from . import behaviours  # noqa
-from . import blackboard  # noqa
+from . import bb  # noqa
 from . import common  # noqa
+from . import console # noqa
+from . import display # noqa
 from . import nodes # noqa
 from . import idioms  # noqa
 from . import logging  # noqa
@@ -25,4 +27,4 @@ from . import timers  # noqa
 from . import trees  # noqa
 from . import utilities  # noqa
 from . import version  # noqa
-from . import visitors  # noqa
+from . import visitors # noqa

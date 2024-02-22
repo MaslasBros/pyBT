@@ -3,7 +3,7 @@ import functools
 
 from .. import common
 from .. import behaviour
-from .. import blackboard
+from ..bb import blackboard
 
 class CheckBlackboardVariableValues(behaviour.Behaviour):
     """

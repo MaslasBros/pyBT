@@ -2,17 +2,9 @@
 # License: BSD
 #   https://raw.githubusercontent.com/splintered-reality/py_trees/devel/LICENSE
 #
+
 from enum import IntEnum
-
-""" import typing
-import uuid
-
-from . import behaviour
-from . import blackboard
-from . import common
-from . import composites
-from . import decorators
-from . import utilities """
+from . import console
 
 # levels
 class Level(IntEnum):
@@ -29,77 +21,6 @@ class Level(IntEnum):
 # module variable
 level = Level.INFO
 
-def banner(msg):
-    print("\n" + 80 * "*")
-    print("* " + msg.center(80))
-    print( 80 * "*" + "\n")
-
-
-def debug(msg):
-    print(msg)
-
-
-def warning(msg):
-    print(msg)
-
-
-def info(msg):
-    print(msg)
-
-
-def error(msg):
-    print(msg)
-
-
-def logdebug(message):
-    '''
-    Prefixes ``[DEBUG]`` and colours the message green.
-
-    Args:
-        message (:obj:`str`): message to log.
-    '''
-    print("[DEBUG] " + message)
-
-
-def loginfo(message):
-    '''
-    Prefixes ``[ INFO]`` to the message.
-
-    Args:
-        message (:obj:`str`): message to log.
-    '''
-    print("[ INFO] " + message)
-
-
-def logwarn(message):
-    '''
-    Prefixes ``[ WARN]`` and colours the message yellow.
-
-    Args:
-        message (:obj:`str`): message to log.
-    '''
-    print("[ WARN] " + message)
-
-
-def logerror(message):
-    '''
-    Prefixes ``[ERROR]`` and colours the message red.
-
-    Args:
-        message (:obj:`str`): message to log.
-    '''
-    print("[ERROR] " + message)
-
-
-def logfatal(message):
-    '''
-    Prefixes ``[FATAL]`` and colours the message bold red.
-
-    Args:
-        message (:obj:`str`): message to log.
-    '''
-    print("[FATAL] " + message)
-
 class Logger(object):
     """
     :cvar override: whether or not the default python logger has been overridden.
@@ -112,17 +33,17 @@ class Logger(object):
     def debug(self, msg):
         global level
         if level < Level.INFO:
-            logdebug(self.prefix + msg)
+            console.logdebug(self.prefix + msg)
 
     def info(self, msg):
         global level
         if level < Level.WARN:
-            loginfo(self.prefix + msg)
+            console.loginfo(self.prefix + msg)
 
     def warning(self, msg):
         global level
         if level < Level.ERROR:
-            logwarn(self.prefix + msg)
+            console.logwarn(self.prefix + msg)
 
     def error(self, msg):
-        logerror(self.prefix + msg)
+        console.logerror(self.prefix + msg)
