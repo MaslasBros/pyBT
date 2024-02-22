@@ -26,7 +26,7 @@ from . import common
 from . import utilities
 
 #Blackboard imports
-from .bb import blackboard
+from .bb.blackboard import Blackboard
 from .bb._internal.activityItem import ActivityItem
 from .bb._internal.activityType import ActivityType
 
@@ -51,6 +51,7 @@ unicode_symbols = {
     'left_right_arrow': '<->',
     'sequence_with_memory': u'{-}',
     'selector_with_memory': u'{o}',
+    'bold': '',
     Sequence: u'[-]',
     Selector: u'[o]',
     Parallel: u'/_/',
@@ -117,10 +118,7 @@ def _generate_text_tree(
         Because the way the shell escape sequences reset everything, this needs to get used on any
         single block of formatted text.
         """
-        if font_weight:
-            return symbols['bold'] + s + symbols['bold_reset']
-        else:
-            return s
+        return s
 
     def generate_lines(root, internal_indent):
 
@@ -260,7 +258,7 @@ def _generate_text_blackboard(
             for client_uuid in client_uuids:
                 metastring = prefix + '{0}'.format(
                     utilities.truncate(
-                        blackboard.Blackboard.clients[client_uuid], 11
+                        Blackboard.clients[client_uuid], 11
                     )
                 )
                 metastring += ' ('
@@ -295,22 +293,22 @@ def _generate_text_blackboard(
                     indent=text_indent,
                     key_width=key_width)
 
-    blackboard_metadata = blackboard.Blackboard.metadata if display_only_key_metadata else None
+    blackboard_metadata = Blackboard.metadata if display_only_key_metadata else None
 
     if key_filter:
         if isinstance(key_filter, list):
             key_filter = set(key_filter)
-        all_keys = blackboard.Blackboard.keys() & key_filter
+        all_keys = Blackboard.keys() & key_filter
     elif regex_filter:
-        all_keys = blackboard.Blackboard.keys_filtered_by_regex(regex_filter)
+        all_keys = Blackboard.keys_filtered_by_regex(regex_filter)
     elif client_filter:
-        all_keys = blackboard.Blackboard.keys_filtered_by_clients(client_filter)
+        all_keys = Blackboard.keys_filtered_by_clients(client_filter)
     else:
-        all_keys = blackboard.Blackboard.keys()
+        all_keys = Blackboard.keys()
     blackboard_storage = {}
     for key in all_keys:
         try:
-            blackboard_storage[key] = blackboard.Blackboard.storage[key]
+            blackboard_storage[key] = Blackboard.storage[key]
         except KeyError:
             blackboard_storage[key] = "-"
 
@@ -380,8 +378,8 @@ def _generate_text_activity(
     if symbols is None:
         symbols = unicode_symbols
     space = symbols['space']
-    if activity_stream is None and blackboard.Blackboard.activity_stream is not None:
-        activity_stream = blackboard.Blackboard.activity_stream.data
+    if activity_stream is None and Blackboard.activity_stream is not None:
+        activity_stream = Blackboard.activity_stream.data
     s = ""
     if show_title:
         s += space * indent + "Blackboard Activity Stream" + "\n"

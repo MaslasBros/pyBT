@@ -23,14 +23,12 @@ import typing
 # General
 ##############################################################################
 
-
 class Name(enum.Enum):
     """
     Naming conventions.
     """
     AUTO_GENERATED = "AUTO_GENERATED"
     """:py:data:`~py_trees.common.Name.AUTO_GENERATED` leaves it to the behaviour to generate a useful, informative name."""
-
 
 class Status(enum.Enum):
     """An enumerator representing the status of a behaviour """
@@ -44,7 +42,6 @@ class Status(enum.Enum):
     INVALID = "INVALID"
     """Behaviour is uninitialised and inactive, i.e. this is the status before first entry, and after a higher priority switch has occurred."""
 
-
 class Duration(enum.Enum):
     """
     Naming conventions.
@@ -53,7 +50,6 @@ class Duration(enum.Enum):
     """:py:data:`~py_trees.common.Duration.INFINITE` oft used for perpetually blocking operations."""
     UNTIL_THE_BATTLE_OF_ALFREDO = math.inf
     """:py:data:`~py_trees.common.Duration.UNTIL_THE_BATTLE_OF_ALFREDO` is an alias for :py:data:`~py_trees.common.Duration.INFINITE`."""
-
 
 class Access(enum.Enum):
     """
@@ -66,7 +62,6 @@ class Access(enum.Enum):
     """Write access, implicitly also grants read access."""
     EXCLUSIVE_WRITE = "EXCLUSIVE_WRITE"
     """Exclusive lock for writing, i.e. no other writer permitted."""
-
 
 ##############################################################################
 # Policies
@@ -158,7 +153,6 @@ class ClearingPolicy(enum.IntEnum):
 ##############################################################################
 # Blackboards
 ##############################################################################
-
 
 class ComparisonExpression(object):
     """

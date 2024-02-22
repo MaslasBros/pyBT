@@ -5,6 +5,7 @@ import itertools
 
 from .. import common
 from .. import utilities
+
 from .blackboard import Blackboard
 from ._internal.activityType import ActivityType
 from ._internal.activityItem import ActivityItem
@@ -638,8 +639,7 @@ class Client(object):
             s += self._stringify_key_value_pairs(
                 keys=keys,
                 key_value_dict=self.remappings,
-                indent=2 * indent,
-                separator=u'\u2192'
+                indent=2 * indent
             )
         s += indent + "Variables" + "\n"
         keys = self.remappings.values()

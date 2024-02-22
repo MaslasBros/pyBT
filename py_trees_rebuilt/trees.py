@@ -34,8 +34,8 @@ import typing
 
 from . import behaviour
 from . import common
-from .nodes import composite
-from .visitors import visitorBase
+from .visitors.visitorBase import VisitorBase
+from .nodes.composite import Composite
 
 CONTINUOUS_TICK_TOCK = -1
 
@@ -46,7 +46,7 @@ CONTINUOUS_TICK_TOCK = -1
 
 def setup(root: behaviour.Behaviour,
           timeout: typing.Union[float, common.Duration]=common.Duration.INFINITE,
-          visitor: visitorBase.VisitorBase=None,
+          visitor: VisitorBase=None,
           **kwargs: int):
     """
     Crawls across a (sub)tree of behaviours
@@ -124,7 +124,6 @@ def setup(root: behaviour.Behaviour,
 # Trees
 ##############################################################################
 
-
 class BehaviourTree(object):
     """
     Grow, water, prune your behaviour tree with this, the default reference
@@ -152,13 +151,13 @@ class BehaviourTree(object):
         TypeError: if root variable is not an instance of :class:`~py_trees.behaviour.Behaviour`
     """
     def __init__(self, root: behaviour.Behaviour):
-        self.count: int = 0
+        self.count = 0
         if not isinstance(root, behaviour.Behaviour):
             raise TypeError("root node must be an instance of 'py_trees.behaviour.Behaviour' [{}]".format(type(root)))
-        self.root: behaviour.Behaviour = root
-        self.visitors: typing.List[visitorBase.VisitorBase] = []
-        self.pre_tick_handlers: typing.List[typing.Callable[['BehaviourTree'], None]] = []
-        self.post_tick_handlers: typing.List[typing.Callable[['BehaviourTree'], None]] = []
+        self.root = root
+        self.visitors = []
+        self.pre_tick_handlers = []
+        self.post_tick_handlers = []
         self.interrupt_tick_tocking = False
         self.tree_update_handler = None  # child classes can utilise this one
 
@@ -194,7 +193,7 @@ class BehaviourTree(object):
         """
         self.post_tick_handlers.append(handler)
 
-    def add_visitor(self, visitor: visitorBase.VisitorBase):
+    def add_visitor(self, visitor: VisitorBase):
         """
         Trees can run multiple visitors on each behaviour as they
         tick through a tree.
@@ -261,7 +260,7 @@ class BehaviourTree(object):
         # TODO: convert this to throwing exceptions instead
         for node in self.root.iterate():
             if node.id == unique_id:
-                if not isinstance(node, composites.Composite):
+                if not isinstance(node, Composite):
                     raise TypeError("parent must be a Composite behaviour.")
                 node.insert_child(child, index)
                 if self.tree_update_handler is not None:
@@ -299,7 +298,7 @@ class BehaviourTree(object):
 
     def setup(self,
               timeout: typing.Union[float, common.Duration]=common.Duration.INFINITE,
-              visitor: visitorBase.VisitorBase=None,
+              visitor: VisitorBase=None,
               **kwargs):
         """
         Crawls across the tree calling :meth:`~py_trees.behaviour.Behaviour.setup`

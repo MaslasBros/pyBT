@@ -24,19 +24,22 @@ from . import behaviour
 from . import common
 
 #Node specific
-from .nodes import sequence as seq, selector as sel, parallel as par
-from .nodes import statusToBlackboard as sta, inverter as inv
+from .nodes.sequence import Sequence
+from .nodes.selector import Selector
+from .nodes.parallel import Parallel
+from .nodes.statusToBlackboard import StatusToBlackboard
+from .nodes.inverter import Inverter
 
 #Behaviours specific
-from .behaviours import behaviours
-from .behaviours import checkBlackboardVariableValue as cbvv
-from .behaviours import checkBlackboardVariableValues as cbvvs
-from .behaviours import checkBlackboardVariableExists as cbve
-from .behaviours import setBlackboardVariable as sbv
-from .behaviours import unsetBlackboardVariable as ubv
+from .behaviours.behaviours import Failure
+from .behaviours.checkBlackboardVariableValue import CheckBlackboardVariableValue
+from .behaviours.checkBlackboardVariableValues import CheckBlackboardVariableValues
+from .behaviours.checkBlackboardVariableExists import CheckBlackboardVariableExists
+from .behaviours.setBlackboardVariable import SetBlackboardVariable
+from .behaviours.unsetBlackboardVariable import UnsetBlackboardVariable
 
 #Blackboard specific
-from .bb import blackboard
+from .bb.blackboard import Blackboard
 
 ##############################################################################
 # Creational Methods
@@ -82,10 +85,10 @@ def pick_up_where_you_left_off(
     Returns:
         :class:`~py_trees.behaviour.Behaviour`: root of the generated subtree
     """
-    root = seq.Sequence(name=name)
+    root = Sequence(name=name)
     for task in tasks:
-        task_selector = sel.Selector(name="Do or Don't")
-        task_guard = cbvv.CheckBlackboardVariableValue(
+        task_selector = Selector(name="Do or Don't")
+        task_guard = CheckBlackboardVariableValue(
             name="Done?",
             check=common.ComparisonExpression(
                 variable=task.name.lower().replace(" ", "_") + "_done",
@@ -93,8 +96,8 @@ def pick_up_where_you_left_off(
                 operator=operator.eq
             )
         )
-        sequence = seq.Sequence(name="Worker")
-        mark_task_done = sbv.SetBlackboardVariable(
+        sequence = Sequence(name="Worker")
+        mark_task_done = SetBlackboardVariable(
             name="Mark\n" + task.name.lower().replace(" ", "_") + "_done",
             variable_name=task.name.lower().replace(" ", "_") + "_done",
             variable_value=True
@@ -103,7 +106,7 @@ def pick_up_where_you_left_off(
         task_selector.add_children([task_guard, sequence])
         root.add_child(task_selector)
     for task in tasks:
-        clear_mark_done = ubv.UnsetBlackboardVariable(
+        clear_mark_done = UnsetBlackboardVariable(
             name="Clear\n" + task.name.lower().replace(" ", "_") + "_done",
             key=task.name.lower().replace(" ", "_") + "_done"
         )
@@ -144,7 +147,7 @@ def eternal_guard(
     for condition in conditions:
         suffix = "" if len(conditions) == 1 else "_{}".format(counter)
         blackboard_variable_names.append(
-            blackboard.Blackboard.separator +
+            Blackboard.separator +
             blackboard_namespace +
             "_condition" +
             suffix
@@ -154,7 +157,7 @@ def eternal_guard(
     conflict = False
     for name in blackboard_variable_names:
         try:
-            unused_name = blackboard.Blackboard.get(name)
+            unused_name = Blackboard.get(name)
             conflict = True
         except KeyError:
             pass
@@ -167,20 +170,20 @@ def eternal_guard(
             blackboard_variable_names.append(blackboard_namespace + "_" + str(unique_id) + "_condition" + suffix)
             counter += 1
     # build the tree
-    root = par.Parallel(
+    root = Parallel(
         name=name,
         policy=common.ParallelPolicy.SuccessOnAll(synchronise=False)
     )
-    guarded_tasks = sel.Selector(name="Guarded Tasks")
+    guarded_tasks = Selector(name="Guarded Tasks")
     for condition, blackboard_variable_name in zip(conditions, blackboard_variable_names):
-        decorated_condition = sta.StatusToBlackboard(
+        decorated_condition = StatusToBlackboard(
             name="StatusToBB",
             child=condition,
             variable_name=blackboard_variable_name
         )
         root.add_child(decorated_condition)
         guarded_tasks.add_child(
-            cbvv.CheckBlackboardVariableValue(
+            CheckBlackboardVariableValue(
                 name="Abort on\n{}".format(condition.name),
                 check=common.ComparisonExpression(
                     variable=blackboard_variable_name,
@@ -257,22 +260,22 @@ def either_or(
         raise ValueError("Must be the same number of conditions as subtrees [{} != {}]".format(
             len(conditions), len(subtrees))
         )
-    root = seq.Sequence(name=name)
+    root = Sequence(name=name)
     configured_namespace = namespace if namespace is not None else \
-        blackboard.Blackboard.separator + name.lower().replace("-", "_").replace(" ", "_") + \
-        blackboard.Blackboard.separator + str(root.id).replace("-", "_").replace(" ", "_") + \
-        blackboard.Blackboard.separator + "conditions"
-    xor = cbvvs.CheckBlackboardVariableValues(
+        Blackboard.separator + name.lower().replace("-", "_").replace(" ", "_") + \
+        Blackboard.separator + str(root.id).replace("-", "_").replace(" ", "_") + \
+        Blackboard.separator + "conditions"
+    xor = CheckBlackboardVariableValues(
         name="XOR",
         checks=conditions,
         operator=operator.xor,
         namespace=configured_namespace
     )
-    chooser = sel.Selector(name="Chooser")
+    chooser = Selector(name="Chooser")
     for counter in range(1, len(conditions) + 1):
-        sequence = seq.Sequence(name="Option {}".format(str(counter)))
-        variable_name = configured_namespace + blackboard.Blackboard.separator + str(counter)
-        disabled = cbvv.CheckBlackboardVariableValue(
+        sequence = Sequence(name="Option {}".format(str(counter)))
+        variable_name = configured_namespace + Blackboard.separator + str(counter)
+        disabled = CheckBlackboardVariableValue(
             name="Enabled?",
             check=common.ComparisonExpression(
                 variable=variable_name,
@@ -315,48 +318,48 @@ def oneshot(
 
     .. seealso:: :class:`py_trees.decorators.OneShot`
     """
-    subtree_root = sel.Selector(name=name)
-    oneshot_with_guard = seq.Sequence(
+    subtree_root = Selector(name=name)
+    oneshot_with_guard = Sequence(
         name="Oneshot w/ Guard")
-    check_not_done = inv.Inverter(
+    check_not_done = Inverter(
         name="Not Completed?",
-        child=cbve.CheckBlackboardVariableExists(
+        child=CheckBlackboardVariableExists(
             name="Completed?",
             variable_name=variable_name
         )
     )
-    set_flag_on_success = sbv.SetBlackboardVariable(
+    set_flag_on_success = SetBlackboardVariable(
         name="Mark Done\n[SUCCESS]",
         variable_name=variable_name,
         variable_value=common.Status.SUCCESS
     )
     # If it's a sequence, don't double-nest it in a redundant manner
-    if isinstance(behaviour, seq.Sequence):
+    if isinstance(behaviour, Sequence):
         behaviour.add_child(set_flag_on_success)
         sequence = behaviour
     else:
-        sequence = seq.Sequence(name="OneShot")
+        sequence = Sequence(name="OneShot")
         sequence.add_children([behaviour, set_flag_on_success])
 
     oneshot_with_guard.add_child(check_not_done)
     if policy == common.OneShotPolicy.ON_SUCCESSFUL_COMPLETION:
         oneshot_with_guard.add_child(sequence)
     else:  # ON_COMPLETION (SUCCESS || FAILURE)
-        oneshot_handler = sel.Selector(name="Oneshot Handler")
-        bookkeeping = seq.Sequence(name="Bookkeeping")
-        set_flag_on_failure = sbv.SetBlackboardVariable(
+        oneshot_handler = Selector(name="Oneshot Handler")
+        bookkeeping = Sequence(name="Bookkeeping")
+        set_flag_on_failure = SetBlackboardVariable(
             name="Mark Done\n[FAILURE]",
             variable_name=variable_name,
             variable_value=common.Status.FAILURE
         )
         bookkeeping.add_children(
             [set_flag_on_failure,
-             behaviours.Failure(name="Failure")
+             Failure(name="Failure")
             ])
         oneshot_handler.add_children([sequence, bookkeeping])
         oneshot_with_guard.add_child(oneshot_handler)
 
-    oneshot_result = cbvv.CheckBlackboardVariableValue(
+    oneshot_result = CheckBlackboardVariableValue(
         name="Oneshot Result",
         check=common.ComparisonExpression(
             variable=variable_name,
