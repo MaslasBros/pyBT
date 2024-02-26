@@ -24,12 +24,12 @@
 ##############################################################################
 
 import itertools
-import py_trees_rebuilt
+import pybt
 
-from py_trees_rebuilt.nodes.sequence import Sequence
-from py_trees_rebuilt.behaviours.count import Count
-from py_trees_rebuilt.trees import BehaviourTree
-from py_trees_rebuilt.visitors.snapshotVisitor import SnapshotVisitor
+from pybt.nodes.sequence import Sequence
+from pybt.behaviours.count import Count
+from pybt.trees import BehaviourTree
+from pybt.visitors.snapshotVisitor import SnapshotVisitor
 
 ##############################################################################
 # Classes
@@ -44,7 +44,7 @@ def description():
     s = content
     return s
 
-def create_root() -> py_trees_rebuilt.behaviour.Behaviour:
+def create_root() -> pybt.behaviour.Behaviour:
     """
     Create the tree to be ticked/displayed.
 
@@ -92,9 +92,9 @@ def main():
     for tick in range(2):
         tree.tick()
         for show_visited, show_status in itertools.product([False, True], [False, True]):
-            py_trees_rebuilt.console.banner("Tick {} / show_only_visited=={} / show_status=={}".format(tick, show_visited, show_status))
+            pybt.console.banner("Tick {} / show_only_visited=={} / show_status=={}".format(tick, show_visited, show_status))
             print(
-                py_trees_rebuilt.display.unicode_tree(
+                pybt.display.unicode_tree(
                     tree.root,
                     show_status=show_status,
                     show_only_visited=show_visited,

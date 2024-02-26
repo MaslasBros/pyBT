@@ -23,7 +23,7 @@
 # Imports
 ##############################################################################
 
-import py_trees_rebuilt
+import pybt
 
 ##############################################################################
 # Classes
@@ -52,10 +52,10 @@ def main():
     print("$ foo.register_key(key='/dudette', access=py_trees.common.Access.WRITE)")
     print("$ foo.register_key(key='/foo/bar/wow', access=py_trees.common.Access.WRITE)")
     print("-------------------------------------------------------------------------------")
-    blackboard = py_trees_rebuilt.bb.client.Client(name="Blackboard")
-    blackboard.register_key(key="dude", access=py_trees_rebuilt.common.Access.WRITE)
-    blackboard.register_key(key="/dudette", access=py_trees_rebuilt.common.Access.WRITE)
-    blackboard.register_key(key="/foo/bar/wow", access=py_trees_rebuilt.common.Access.WRITE)
+    blackboard = pybt.bb.client.Client(name="Blackboard")
+    blackboard.register_key(key="dude", access=pybt.common.Access.WRITE)
+    blackboard.register_key(key="/dudette", access=pybt.common.Access.WRITE)
+    blackboard.register_key(key="/foo/bar/wow", access=pybt.common.Access.WRITE)
     print(blackboard)
     print("-------------------------------------------------------------------------------")
     print("$ blackboard.dude = 'Bob'")
@@ -63,24 +63,24 @@ def main():
     print("-------------------------------------------------------------------------------")
     blackboard.dude = "Bob"
     blackboard.dudette = "Jade"
-    print(py_trees_rebuilt.display.unicode_blackboard())
+    print(pybt.display.unicode_blackboard())
     print("-------------------------------------------------------------------------------")
     print("$ blackboard.foo.bar.wow = 'foobar'")
     print("-------------------------------------------------------------------------------")
     blackboard.foo.bar.wow = "foobar"
-    print(py_trees_rebuilt.display.unicode_blackboard())
+    print(pybt.display.unicode_blackboard())
     print("-------------------------------------------------------------------------------")
     print("$ py_trees.blackboard.Client(name='Foo', namespace='foo')")
     print("$ foo.register_key(key='awesome', access=py_trees.common.Access.WRITE)")
     print("$ foo.register_key(key='/brilliant', access=py_trees.common.Access.WRITE)")
     print("$ foo.register_key(key='/foo/clever', access=py_trees.common.Access.WRITE)")
     print("-------------------------------------------------------------------------------")
-    foo = py_trees_rebuilt.bb.client.Client(name="Foo", namespace="foo")
-    foo.register_key(key="awesome", access=py_trees_rebuilt.common.Access.WRITE)
+    foo = pybt.bb.client.Client(name="Foo", namespace="foo")
+    foo.register_key(key="awesome", access=pybt.common.Access.WRITE)
     # TODO: should /brilliant be namespaced or go directly to root?
-    foo.register_key(key="/brilliant", access=py_trees_rebuilt.common.Access.WRITE)
+    foo.register_key(key="/brilliant", access=pybt.common.Access.WRITE)
     # absolute names are ok, so long as they include the namespace
-    foo.register_key(key="/foo/clever", access=py_trees_rebuilt.common.Access.WRITE)
+    foo.register_key(key="/foo/clever", access=pybt.common.Access.WRITE)
     print(foo)
     print("-------------------------------------------------------------------------------")
     print("$ foo.awesome = True")
@@ -93,4 +93,4 @@ def main():
     # This will fail since it looks for the namespaced /foo/brilliant key
     # foo.brilliant = False
     foo.clever = True
-    print(py_trees_rebuilt.display.unicode_blackboard())
+    print(pybt.display.unicode_blackboard())

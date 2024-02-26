@@ -22,12 +22,12 @@
 # Imports
 ##############################################################################
 
-import py_trees_rebuilt
+import pybt
 import time
 
-from py_trees_rebuilt.nodes.parallel import Parallel
-from py_trees_rebuilt.nodes.sequence import Sequence
-from py_trees_rebuilt.behaviours.count import Count
+from pybt.nodes.parallel import Parallel
+from pybt.nodes.sequence import Sequence
+from pybt.behaviours.count import Count
 
 ##############################################################################
 # Classes
@@ -47,7 +47,7 @@ def description():
     s = content
     return s
 
-class ContextSwitch(py_trees_rebuilt.behaviour.Behaviour):
+class ContextSwitch(pybt.behaviour.Behaviour):
     """
     An example of a context switching class that sets (in ``initialise()``)
     and restores a context (in ``terminate()``). Use in parallel with a
@@ -79,7 +79,7 @@ class ContextSwitch(py_trees_rebuilt.behaviour.Behaviour):
         Just returns RUNNING while it waits for other activities to finish.
         """
         self.logger.debug("%s.update()[RUNNING][%s]" % (self.__class__.__name__, self.feedback_message))
-        return py_trees_rebuilt.common.Status.RUNNING
+        return pybt.common.Status.RUNNING
 
     def terminate(self, new_status):
         """
@@ -92,7 +92,7 @@ class ContextSwitch(py_trees_rebuilt.behaviour.Behaviour):
 
 
 def create_root():
-    root = Parallel(name="Parallel", policy=py_trees_rebuilt.common.ParallelPolicy.SuccessOnOne())
+    root = Parallel(name="Parallel", policy=pybt.common.ParallelPolicy.SuccessOnOne())
     context_switch = ContextSwitch(name="Context")
     sequence = Sequence(name="Sequence")
     for job in ["Action 1", "Action 2"]:
@@ -115,7 +115,7 @@ def main():
     Entry point for the demo script.
     """
     print(description())
-    py_trees_rebuilt.logging.level = py_trees_rebuilt.logging.Level.DEBUG
+    pybt.logging.level = pybt.logging.Level.DEBUG
 
     root = create_root()
 
@@ -128,7 +128,7 @@ def main():
             print("\n--------- Tick {0} ---------\n".format(i))
             root.tick_once()
             print("\n")
-            print("{}".format(py_trees_rebuilt.display.unicode_tree(root, show_status=True)))
+            print("{}".format(pybt.display.unicode_tree(root, show_status=True)))
             time.sleep(1.0)
         except KeyboardInterrupt:
             break

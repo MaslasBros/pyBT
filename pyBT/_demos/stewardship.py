@@ -22,18 +22,18 @@
 # Imports
 ##############################################################################
 
-import py_trees_rebuilt
+import pybt
 import time
 
-from py_trees_rebuilt.bb.blackboard import Blackboard
-from py_trees_rebuilt.trees import BehaviourTree
-from py_trees_rebuilt.visitors.debugVisitor import DebugVisitor
-from py_trees_rebuilt.visitors.displaySnapshotVisitor import DisplaySnapshotVisitor
+from pybt.bb.blackboard import Blackboard
+from pybt.trees import BehaviourTree
+from pybt.visitors.debugVisitor import DebugVisitor
+from pybt.visitors.displaySnapshotVisitor import DisplaySnapshotVisitor
 
-from py_trees_rebuilt.behaviours.behaviours import Success
+from pybt.behaviours.behaviours import Success
 
-from py_trees_rebuilt.nodes.sequence import Sequence
-from py_trees_rebuilt.nodes.selector import Selector
+from pybt.nodes.sequence import Sequence
+from pybt.nodes.selector import Selector
 
 ##############################################################################
 # Classes
@@ -59,11 +59,11 @@ def description():
 def pre_tick_handler(behaviour_tree):
     print("\n--------- Run %s ---------\n" % behaviour_tree.count)
 
-class SuccessEveryN(py_trees_rebuilt.behaviours.successEveryN.SuccessEveryN):
+class SuccessEveryN(pybt.behaviours.successEveryN.SuccessEveryN):
     def __init__(self):
         super().__init__(name="EveryN", n=5)
         self.blackboard = self.attach_blackboard_client(name=self.name)
-        self.blackboard.register_key("count", access=py_trees_rebuilt.common.Access.WRITE)
+        self.blackboard.register_key("count", access=pybt.common.Access.WRITE)
 
     def update(self):
         status = super().update()
@@ -71,11 +71,11 @@ class SuccessEveryN(py_trees_rebuilt.behaviours.successEveryN.SuccessEveryN):
         return status
 
 
-class PeriodicSuccess(py_trees_rebuilt.behaviours.periodic.Periodic):
+class PeriodicSuccess(pybt.behaviours.periodic.Periodic):
     def __init__(self):
         super().__init__(name="Periodic", n=3)
         self.blackboard = self.attach_blackboard_client(name=self.name)
-        self.blackboard.register_key("period", access=py_trees_rebuilt.common.Access.WRITE)
+        self.blackboard.register_key("period", access=pybt.common.Access.WRITE)
 
     def update(self):
         status = super().update()
@@ -83,12 +83,12 @@ class PeriodicSuccess(py_trees_rebuilt.behaviours.periodic.Periodic):
         return status
 
 
-class Finisher(py_trees_rebuilt.behaviour.Behaviour):
+class Finisher(pybt.behaviour.Behaviour):
     def __init__(self):
         super().__init__(name="Finisher")
         self.blackboard = self.attach_blackboard_client(name=self.name)
-        self.blackboard.register_key("count", access=py_trees_rebuilt.common.Access.READ)
-        self.blackboard.register_key("period", access=py_trees_rebuilt.common.Access.READ)
+        self.blackboard.register_key("count", access=pybt.common.Access.READ)
+        self.blackboard.register_key("period", access=pybt.common.Access.READ)
 
     def update(self):
         print("---------------------------")
@@ -96,7 +96,7 @@ class Finisher(py_trees_rebuilt.behaviour.Behaviour):
         print("  Count : {}".format(self.blackboard.count))
         print("  Period: {}".format(self.blackboard.period))
         print("---------------------------")
-        return py_trees_rebuilt.common.Status.SUCCESS
+        return pybt.common.Status.SUCCESS
 
 
 def create_tree():
@@ -124,7 +124,7 @@ def main():
     """
     Entry point for the demo script.
     """
-    py_trees_rebuilt.logging.level = py_trees_rebuilt.logging.Level.DEBUG
+    pybt.logging.level = pybt.logging.Level.DEBUG
     tree = create_tree()
     print(description())
 
@@ -150,4 +150,5 @@ def main():
     while cnt <= 10:
         behaviour_tree.tick()
         time.sleep(0.5)
+        cnt +=1
     print("\n")

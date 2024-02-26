@@ -76,7 +76,7 @@ combination of behaviours to affect the non-blocking characteristics.
 # Imports
 ##############################################################################
 
-from typing import Callable, Union  # noqa
+from typing import Callable, Union
 
 from .. import behaviour
 from ..bb import blackboard

@@ -20,10 +20,10 @@
 # Imports
 ##############################################################################
 
-import py_trees_rebuilt
+import pybt
 import time
 
-import py_trees_rebuilt.console as console
+import pybt.console as console
 
 ##############################################################################
 # Classes
@@ -38,7 +38,7 @@ def description():
     s = content
     return s
 
-class Counter(py_trees_rebuilt.behaviour.Behaviour):
+class Counter(pybt.behaviour.Behaviour):
     """
     Simple counting behaviour that facilitates the demonstration of a behaviour in
     the demo behaviours lifecycle program.
@@ -72,8 +72,8 @@ class Counter(py_trees_rebuilt.behaviour.Behaviour):
         Increment the counter and decide upon a new status result for the behaviour.
         """
         self.counter += 1
-        new_status = py_trees_rebuilt.common.Status.SUCCESS if self.counter == 3 else py_trees_rebuilt.common.Status.RUNNING
-        if new_status == py_trees_rebuilt.common.Status.SUCCESS:
+        new_status = pybt.common.Status.SUCCESS if self.counter == 3 else pybt.common.Status.RUNNING
+        if new_status == pybt.common.Status.SUCCESS:
             self.feedback_message = "counting...{0} - phew, thats enough for today".format(self.counter)
         else:
             self.feedback_message = "still counting"
@@ -99,7 +99,7 @@ def main():
 
     print(description())
 
-    py_trees_rebuilt.logging.level = py_trees_rebuilt.logging.Level.DEBUG
+    pybt.logging.level = pybt.logging.Level.DEBUG
 
     counter = Counter()
     counter.setup()

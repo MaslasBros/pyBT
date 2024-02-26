@@ -25,23 +25,23 @@
 import functools
 import operator
 import time
-import py_trees_rebuilt
+import pybt
 
-from py_trees_rebuilt.common import *
+from pybt.common import *
 
-from py_trees_rebuilt.nodes.sequence import Sequence
-from py_trees_rebuilt.trees import BehaviourTree
-from py_trees_rebuilt.visitors.snapshotVisitor import SnapshotVisitor
-from py_trees_rebuilt.visitors.debugVisitor import DebugVisitor
+from pybt.nodes.sequence import Sequence
+from pybt.trees import BehaviourTree
+from pybt.visitors.snapshotVisitor import SnapshotVisitor
+from pybt.visitors.debugVisitor import DebugVisitor
 
-from py_trees_rebuilt.nodes.parallel import Parallel
-from py_trees_rebuilt.nodes.selector import Selector
-from py_trees_rebuilt.nodes.failureIsRunning import FailureIsRunning
+from pybt.nodes.parallel import Parallel
+from pybt.nodes.selector import Selector
+from pybt.nodes.failureIsRunning import FailureIsRunning
 
-from py_trees_rebuilt.behaviours.successEveryN import SuccessEveryN
-from py_trees_rebuilt.behaviours.setBlackboardVariable import SetBlackboardVariable
-from py_trees_rebuilt.behaviours.tickCounter import TickCounter
-from py_trees_rebuilt.behaviours.behaviours import Running
+from pybt.behaviours.successEveryN import SuccessEveryN
+from pybt.behaviours.setBlackboardVariable import SetBlackboardVariable
+from pybt.behaviours.tickCounter import TickCounter
+from pybt.behaviours.behaviours import Running
 
 ##############################################################################
 # Classes
@@ -70,13 +70,13 @@ def pre_tick_handler(behaviour_tree):
 
 def post_tick_handler(snapshot_visitor, behaviour_tree):
     print(
-        "\n" + py_trees_rebuilt.display.unicode_tree(
+        "\n" + pybt.display.unicode_tree(
             root=behaviour_tree.root,
             visited=snapshot_visitor.visited,
             previously_visited=snapshot_visitor.previously_visited
         )
     )
-    print(py_trees_rebuilt.display.unicode_blackboard())
+    print(pybt.display.unicode_blackboard())
 
 
 def create_root():
@@ -121,7 +121,7 @@ def create_root():
         completion_status= Status.SUCCESS
     )
     idle = Running(name="Idle")
-    either_or = py_trees_rebuilt.idioms.either_or(
+    either_or = pybt.idioms.either_or(
         name="Either Or",
         conditions=[
             ComparisonExpression("joystick_one", "enabled", operator.eq),
@@ -155,7 +155,7 @@ def main():
     """
     Entry point for the demo script.
     """
-    py_trees_rebuilt.logging.level = py_trees_rebuilt.logging.Level.DEBUG
+    pybt.logging.level = pybt.logging.Level.DEBUG
     root = create_root()
     print(description(root))
 

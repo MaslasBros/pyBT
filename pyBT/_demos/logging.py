@@ -24,24 +24,24 @@
 
 import functools
 import json
-import py_trees_rebuilt
+import pybt
 import time
 
-import py_trees_rebuilt.console as console
+import pybt.console as console
 
-from py_trees_rebuilt.nodes.selector import Selector
-from py_trees_rebuilt.nodes.sequence import Sequence
-from py_trees_rebuilt.nodes.parallel import Parallel
-from py_trees_rebuilt.nodes.decorator import Decorator
+from pybt.nodes.selector import Selector
+from pybt.nodes.sequence import Sequence
+from pybt.nodes.parallel import Parallel
+from pybt.nodes.decorator import Decorator
 
-from py_trees_rebuilt.behaviours.periodic import Periodic
-from py_trees_rebuilt.behaviours.successEveryN import SuccessEveryN
-from py_trees_rebuilt.behaviours.behaviours import Success
+from pybt.behaviours.periodic import Periodic
+from pybt.behaviours.successEveryN import SuccessEveryN
+from pybt.behaviours.behaviours import Success
 
-from py_trees_rebuilt.trees import BehaviourTree
+from pybt.trees import BehaviourTree
 
-from py_trees_rebuilt.visitors.debugVisitor import DebugVisitor
-from py_trees_rebuilt.visitors.displaySnapshotVisitor import DisplaySnapshotVisitor
+from pybt.visitors.debugVisitor import DebugVisitor
+from pybt.visitors.displaySnapshotVisitor import DisplaySnapshotVisitor
 
 ##############################################################################
 # Classes
@@ -113,7 +113,7 @@ def create_tree():
     sequence.add_child(guard)
     sequence.add_child(periodic_success)
     sequence.add_child(finisher)
-    sequence.blackbox_level = py_trees_rebuilt.common.BlackBoxLevel.COMPONENT
+    sequence.blackbox_level = pybt.common.BlackBoxLevel.COMPONENT
     idle = Success("Idle")
     root = Selector(name="Logging")
     root.add_child(every_n_success)
@@ -129,7 +129,7 @@ def main():
     """
     Entry point for the demo script.
     """
-    py_trees_rebuilt.logging.level = py_trees_rebuilt.logging.Level.DEBUG
+    pybt.logging.level = pybt.logging.Level.DEBUG
     tree = create_tree()
     print(description(tree))
 

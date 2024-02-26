@@ -22,11 +22,11 @@
 # Imports
 ##############################################################################
 
-import py_trees_rebuilt
+import pybt
 import time
 
-from py_trees_rebuilt.behaviours.count import Count
-from py_trees_rebuilt.nodes.sequence import Sequence
+from pybt.behaviours.count import Count
+from pybt.nodes.sequence import Sequence
 
 ##############################################################################
 # Classes
@@ -60,7 +60,7 @@ def main():
     Entry point for the demo script.
     """
     print(description())
-    py_trees_rebuilt.logging.level = py_trees_rebuilt.logging.Level.DEBUG
+    pybt.logging.level = pybt.logging.Level.DEBUG
 
     root = create_root()
 
@@ -72,7 +72,7 @@ def main():
         try:
             print("\n--------- Tick {0} ---------\n".format(i))
             root.tick_once()
-            print(py_trees_rebuilt.display.unicode_tree(root=root, show_status=True))
+            print(pybt.display.unicode_tree(root=root, show_status=True))
             time.sleep(1)
         except KeyboardInterrupt:
             break

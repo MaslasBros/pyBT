@@ -20,10 +20,10 @@
 # Imports
 ##############################################################################
 
-import py_trees_rebuilt.common
+import pybt.common
 import time
 
-import py_trees_rebuilt.console as console
+import pybt.console as console
 
 ##############################################################################
 # Classes
@@ -62,7 +62,7 @@ def planning(pipe_connection):
         pass
 
 
-class Action(py_trees_rebuilt.behaviour.Behaviour):
+class Action(pybt.behaviour.Behaviour):
     """
     Connects to a subprocess to initiate a goal, and monitors the progress
     of that goal at each tick until the goal is completed, at which time
@@ -106,17 +106,17 @@ class Action(py_trees_rebuilt.behaviour.Behaviour):
         """
         Increment the counter and decide upon a new status result for the behaviour.
         """
-        new_status = py_trees_rebuilt.common.Status.RUNNING
+        new_status = pybt.common.Status.RUNNING
         self.tickedFor += 1
         """ if self.parent_connection.poll():
             self.percentage_completion = self.parent_connection.recv().pop() """
         if self.percentage_completion >= 100:
             if self.percentage_completion == 100:
-                new_status = py_trees_rebuilt.common.Status.SUCCESS
+                new_status = pybt.common.Status.SUCCESS
         else:
             self.percentage_completion += 10
 
-        if new_status == py_trees_rebuilt.common.Status.SUCCESS:
+        if new_status == pybt.common.Status.SUCCESS:
             self.feedback_message = "Processing finished"
             self.logger.debug("%s.update()[%s->%s][%s]" % (self.__class__.__name__, self.status, new_status, self.feedback_message))
         else:
@@ -143,7 +143,7 @@ def main():
 
     print(description())
 
-    py_trees_rebuilt.logging.level = py_trees_rebuilt.logging.Level.DEBUG
+    pybt.logging.level = pybt.logging.Level.DEBUG
 
     action = Action()
     action.setup()

@@ -24,10 +24,10 @@
 ##############################################################################
 
 import argparse
-import py_trees_rebuilt
+import pybt
 import typing
 
-import py_trees_rebuilt.console as console
+import pybt.console as console
 
 ##############################################################################
 # Classes
@@ -41,7 +41,7 @@ def description():
     s = content
     return s
 
-class Remap(py_trees_rebuilt.behaviour.Behaviour):
+class Remap(pybt.behaviour.Behaviour):
     """
     Custom writer that submits a more complicated variable to the blackboard.
     """
@@ -51,7 +51,7 @@ class Remap(py_trees_rebuilt.behaviour.Behaviour):
         self.blackboard = self.attach_blackboard_client()
         self.blackboard.register_key(
             key="/foo/bar/wow",
-            access=py_trees_rebuilt.common.Access.WRITE,
+            access=pybt.common.Access.WRITE,
             remap_to=remap_to["/foo/bar/wow"]
         )
 
@@ -62,7 +62,7 @@ class Remap(py_trees_rebuilt.behaviour.Behaviour):
         self.logger.debug("%s.update()" % (self.__class__.__name__))
         self.blackboard.foo.bar.wow = "colander"
 
-        return py_trees_rebuilt.common.Status.SUCCESS
+        return pybt.common.Status.SUCCESS
 
 ##############################################################################
 # Main
@@ -74,8 +74,8 @@ def main():
     Entry point for the demo script.
     """
     print(description())
-    py_trees_rebuilt.logging.level = py_trees_rebuilt.logging.Level.DEBUG
-    py_trees_rebuilt.bb.blackboard.Blackboard.enable_activity_stream(maximum_size=100)
+    pybt.logging.level = pybt.logging.Level.DEBUG
+    pybt.bb.blackboard.Blackboard.enable_activity_stream(maximum_size=100)
     root = Remap(name="Remap", remap_to={"/foo/bar/wow": "/parameters/wow"})
 
     ####################
@@ -83,4 +83,4 @@ def main():
     ####################
     root.tick_once()
     print(root.blackboard)
-    print(py_trees_rebuilt.display.unicode_blackboard())
+    print(pybt.display.unicode_blackboard())

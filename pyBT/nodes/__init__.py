@@ -7,7 +7,7 @@
 ##############################################################################
 
 """
-This is the node-level namespace of the py_trees_rebuilt.composites package.
+This is the node-level namespace of the pybt.composites package.
 """
 
 #Composites

@@ -28,7 +28,7 @@
 ##############################################################################
 
 import operator
-import py_trees_rebuilt
+import pybt
 
 ##############################################################################
 # Classes
@@ -54,15 +54,15 @@ class Nested(object):
         return str({"foo": self.foo})
 
 
-class BlackboardWriter(py_trees_rebuilt.behaviour.Behaviour):
+class BlackboardWriter(pybt.behaviour.Behaviour):
     """
     Custom writer that submits a more complicated variable to the blackboard.
     """
     def __init__(self, name="Writer"):
         super().__init__(name=name)
         self.blackboard = self.attach_blackboard_client()
-        self.blackboard.register_key(key="dude", access=py_trees_rebuilt.common.Access.READ)
-        self.blackboard.register_key(key="spaghetti", access=py_trees_rebuilt.common.Access.WRITE)
+        self.blackboard.register_key(key="dude", access=pybt.common.Access.READ)
+        self.blackboard.register_key(key="spaghetti", access=pybt.common.Access.WRITE)
 
         self.logger.debug("%s.__init__()" % (self.__class__.__name__))
 
@@ -89,10 +89,10 @@ class BlackboardWriter(py_trees_rebuilt.behaviour.Behaviour):
             self.blackboard.set("spaghetti", {"type": "Bolognese", "quantity": 3}, overwrite=False)
         except AttributeError:
             pass
-        return py_trees_rebuilt.common.Status.SUCCESS
+        return pybt.common.Status.SUCCESS
 
 
-class ParamsAndState(py_trees_rebuilt.behaviour.Behaviour):
+class ParamsAndState(pybt.behaviour.Behaviour):
     """
     A more esotoric use of multiple blackboards in a behaviour to represent
     storage of parameters and state.
@@ -105,11 +105,11 @@ class ParamsAndState(py_trees_rebuilt.behaviour.Behaviour):
         self.state = self.attach_blackboard_client("State", "state")
         self.parameters.register_key(
             key="default_speed",
-            access=py_trees_rebuilt.common.Access.READ
+            access=pybt.common.Access.READ
         )
         self.state.register_key(
             key="current_speed",
-            access=py_trees_rebuilt.common.Access.WRITE
+            access=pybt.common.Access.WRITE
         )
 
     def initialise(self):
@@ -120,21 +120,21 @@ class ParamsAndState(py_trees_rebuilt.behaviour.Behaviour):
 
     def update(self):
         if self.state.current_speed > 40.0:
-            return py_trees_rebuilt.common.Status.SUCCESS
+            return pybt.common.Status.SUCCESS
         else:
             self.state.current_speed += 1.0
-            return py_trees_rebuilt.common.Status.RUNNING
+            return pybt.common.Status.RUNNING
 
 
 def create_root():
-    root = py_trees_rebuilt.nodes.sequence.Sequence("Blackboard Demo")
-    set_blackboard_variable = py_trees_rebuilt.behaviours.setBlackboardVariable.SetBlackboardVariable(
+    root = pybt.nodes.sequence.Sequence("Blackboard Demo")
+    set_blackboard_variable = pybt.behaviours.setBlackboardVariable.SetBlackboardVariable(
         name="Set Nested", variable_name="nested", variable_value=Nested()
     )
     write_blackboard_variable = BlackboardWriter(name="Writer")
-    check_blackboard_variable = py_trees_rebuilt.behaviours.checkBlackboardVariableValue.CheckBlackboardVariableValue(
+    check_blackboard_variable = pybt.behaviours.checkBlackboardVariableValue.CheckBlackboardVariableValue(
         name="Check Nested Foo",
-        check=py_trees_rebuilt.common.ComparisonExpression(
+        check=pybt.common.ComparisonExpression(
             variable="nested.foo",
             value="bar",
             operator=operator.eq
@@ -159,11 +159,11 @@ def main():
     Entry point for the demo script.
     """
     print(description())
-    py_trees_rebuilt.logging.level = py_trees_rebuilt.logging.Level.DEBUG
-    py_trees_rebuilt.bb.blackboard.Blackboard.enable_activity_stream(maximum_size=100)
-    blackboard = py_trees_rebuilt.bb.client.Client(name="Configuration")
-    blackboard.register_key(key="dude", access=py_trees_rebuilt.common.Access.WRITE)
-    blackboard.register_key(key="/parameters/default_speed", access=py_trees_rebuilt.common.Access.WRITE)
+    pybt.logging.level = pybt.logging.Level.DEBUG
+    pybt.bb.blackboard.Blackboard.enable_activity_stream(maximum_size=100)
+    blackboard = pybt.bb.client.Client(name="Configuration")
+    blackboard.register_key(key="dude", access=pybt.common.Access.WRITE)
+    blackboard.register_key(key="/parameters/default_speed", access=pybt.common.Access.WRITE)
     blackboard.dude = "Bob"
     blackboard.parameters.default_speed = 30.0
 
@@ -173,16 +173,16 @@ def main():
     # Execute
     ####################
     root.setup_with_descendants()
-    unset_blackboard = blackboard = py_trees_rebuilt.bb.client.Client(name="Unsetter")
-    unset_blackboard.register_key(key="foo", access=py_trees_rebuilt.common.Access.WRITE)
+    unset_blackboard = blackboard = pybt.bb.client.Client(name="Unsetter")
+    unset_blackboard.register_key(key="foo", access=pybt.common.Access.WRITE)
     print("\n--------- Tick 0 ---------\n")
     root.tick_once()
     print("\n")
-    print(py_trees_rebuilt.display.unicode_tree(root))
+    print(pybt.display.unicode_tree(root))
     print("--------------------------\n")
-    print(py_trees_rebuilt.display.unicode_blackboard())
+    print(pybt.display.unicode_blackboard())
     print("--------------------------\n")
-    print(py_trees_rebuilt.display.unicode_blackboard(display_only_key_metadata=True))
+    print(pybt.display.unicode_blackboard(display_only_key_metadata=True))
     print("--------------------------\n")
     unset_blackboard.unset("foo")
-    print(py_trees_rebuilt.display.unicode_blackboard())
+    print(pybt.display.unicode_blackboard())
