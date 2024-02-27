@@ -87,6 +87,7 @@ class Composite(behaviour.Behaviour):
         else:
             self.children = []
         self.current_child = None
+        pass
 
     ############################################
     # Worker Overrides

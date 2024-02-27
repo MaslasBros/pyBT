@@ -29,3 +29,4 @@ from . import utilities  # noqa
 from . import version  # noqa
 from . import visitors # noqa
 from . import _demos # noqa
+from . import builder # noqa
