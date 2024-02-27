@@ -29,7 +29,7 @@ class Selector(co.Composite):
         children ([:class:`~py_trees.behaviour.Behaviour`]): list of children to add
     """
 
-    def __init__(self, name="Selector", memory=False, children=None):
+    def __init__(self, name = "Selector", memory = False, children = None):
         super(Selector, self).__init__(name, children)
         self.memory = memory
 
