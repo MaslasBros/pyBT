@@ -1,4 +1,4 @@
-from .. import *
+from . import *
 
 class BehaviourTreeBuilder():
     def __init__(self):
