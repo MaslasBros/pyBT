@@ -18,7 +18,7 @@ class OneShot(dec.Decorator):
 
     .. seealso:: :meth:`py_trees.idioms.oneshot`
     """
-    def __init__(self, child,
+    def __init__(self, child = None,
                  name=common.Name.AUTO_GENERATED,
                  policy=common.OneShotPolicy.ON_SUCCESSFUL_COMPLETION):
         """

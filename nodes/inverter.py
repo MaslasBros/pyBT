@@ -5,7 +5,7 @@ class Inverter(dec.Decorator):
     """
     A decorator that inverts the result of a class's update function.
     """
-    def __init__(self, child, name=common.Name.AUTO_GENERATED):
+    def __init__(self, child = None, name=common.Name.AUTO_GENERATED):
         """
         Init with the decorated child.
 

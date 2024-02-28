@@ -14,7 +14,7 @@ class StatusToBlackboard(dec.Decorator):
     def __init__(
             self,
             *,
-            child: behaviour.Behaviour,
+            child: behaviour.Behaviour = None,
             variable_name: str,
             name: dec.Union[str, common.Name]=common.Name.AUTO_GENERATED,
     ):

@@ -14,7 +14,7 @@ class Timeout(dec.Decorator):
     as that of it's encapsulated behaviour.
     """
     def __init__(self,
-                 child: behaviour.Behaviour,
+                 child: behaviour.Behaviour = None,
                  name: dec.Union[str, common.Name]=common.Name.AUTO_GENERATED,
                  duration: float=5.0):
         """
