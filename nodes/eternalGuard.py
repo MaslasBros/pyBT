@@ -73,7 +73,7 @@ class EternalGuard(dec.Decorator):
     def __init__(
             self,
             *,
-            child: behaviour.Behaviour,
+            child: behaviour.Behaviour = None,
             # Condition is one of 4 callable types illustrated in the docstring, partials complicate
             # it as well. When typing_extensions are available (very recent) more generally, can use
             # Protocols to handle it. Probably also a sign that it's not a very clean api though...
@@ -85,7 +85,7 @@ class EternalGuard(dec.Decorator):
         self.blackboard = self.attach_blackboard_client(self.name)
         for key in blackboard_keys:
             self.blackboard.register_key(key=key, access=common.Access.READ)
-        condition_signature = dec.inspect.signature(condition)
+        condition_signature = dec.signature(condition)
         if "blackboard" in [p.name for p in condition_signature.parameters.values()]:
             self.condition = dec.functools.partial(condition, self.blackboard)
         else:

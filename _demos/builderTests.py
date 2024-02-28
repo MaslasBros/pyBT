@@ -26,7 +26,7 @@ class MyAction(Behaviour):
 if __name__ == "__main__":
     #invalid_bt = pb.BehaviourTreeBuilder().Action(MyAction("My invalid action")).Build()
 
-    bt = pb.BehaviourTreeBuilder().Sequence("Entry").\
+    """ bt = pb.BehaviourTreeBuilder().Sequence("Entry").\
                                     Sequence("Sequence1").\
                                         Action(MyAction("Action1.1")).\
                                         Action(MyAction("Action1.2")).\
@@ -38,6 +38,14 @@ if __name__ == "__main__":
                                 Root().Sequence("Sequence2").\
                                     Action(MyAction("Action2.1")).\
                                     Action(MyAction("Action2.2")).\
+                                Build() """
+    
+    def returnTrue():
+        return pb.common.Status.SUCCESS
+
+    bt = pb.BehaviourTreeBuilder().Sequence("Entry").\
+                                    EternalGuard("EntryGuard", returnTrue).\
+                                    Action(MyAction("Action1")).\
                                 Build()
     
     bt.setup()

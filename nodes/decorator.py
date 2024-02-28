@@ -76,7 +76,10 @@ combination of behaviours to affect the non-blocking characteristics.
 # Imports
 ##############################################################################
 
+import functools
+
 from typing import Callable, Union
+from inspect import signature
 
 from .. import behaviour
 from ..bb import blackboard
@@ -107,15 +110,28 @@ class Decorator(behaviour.Behaviour):
     """
     def __init__(
             self,
-            child: behaviour.Behaviour,
+            child: behaviour.Behaviour = None,
             name=common.Name.AUTO_GENERATED
     ):
-        # Checks
-        if not isinstance(child, behaviour.Behaviour):
-            raise TypeError("A decorator's child must be an instance of py_trees.behaviours.Behaviour")
-        # Initialise
         super().__init__(name=name)
-        self.children.append(child)
+        
+        # Checks
+        if child is not None:
+            if not isinstance(child, behaviour.Behaviour):
+                raise TypeError("A decorator's child must be an instance of py_trees.behaviours.Behaviour")
+            # Initialise
+            self.children.append(child)
+            # Give a convenient alias
+            self.decorated = self.children[0]
+            self.decorated.parent = self
+        else:
+            self.decorated = None
+
+    def add_decorated(self, decoratedNode):
+        if self.decorated is not None:
+            raise ValueError("Decorator {0} already contains a child node.")
+
+        self.children.append(decoratedNode)
         # Give a convenient alias
         self.decorated = self.children[0]
         self.decorated.parent = self
