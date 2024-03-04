@@ -239,10 +239,13 @@ class BehaviourTreeBuilder():
         
         Args:
             name (:class:`str`): The node name.
+
+        Raises:
+            SyntaxError (:class:`SyntaxError`): If an Action node is the root of the behaviour.
         """
         
         if self.root is None:
-            raise SyntaxError("An action can't be the root node to a Behaviour tree.")
+            raise SyntaxError("An action node can't be the root node to a Behaviour tree.")
 
         if isinstance(self.currentNode, nodes.composite.Composite):
                 self.currentNode.add_child(actionClass)
