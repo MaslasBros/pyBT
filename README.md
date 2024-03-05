@@ -1,7 +1,5 @@
 # Py Trees
 
-[[About](#about)][[Docs & Demos](#docs-and-demos)][[Releases](#releases)][[Installation](#installation)][[PyTrees-Ros Ecosystem](#pytrees-ros-ecosystem)]
-
 ----
 
 ## About
@@ -14,139 +12,103 @@ PyTrees is a python implementation of behaviour trees designed to facilitate the
 * Python decorators for enabling meta behaviours
 * Render trees to dot graphs or visualise with ascii graphs on stdout
 
+## Tree Builder
+
+The MaslasBros fork has its own Tree Builder which is essentially a wrapper class on top of the already-existing PyTrees API.
+
+The role of the PyTreeBuilder is to provide the developer with a simple-to-use API that will construct for him a BehaviourTree instance.
+
+> Indendation does not matter on the actual tree building sequence, it's just for tree clarity and easier debugging. 
+
+The PyTreeBuilder can be used as follows:
+
+```python
+import pybt.logging as logger
+import pybt.builder as pb
+
+bt = pb.BehaviourTreeBuilder(True).Sequence("Entry").\
+                                        Sequence("Sequence1").\
+                                            Action(MyAction("Action1.1")).\
+                                            Action(MyAction("Action1.2")).\
+                                            Selector("Selector1").\
+                                                Action(MyAction("SelAction1")).\
+                                                Action(MyAction("SelAction2")).\
+                                                Action(MyAction("SelAction3")).\
+                                        Parent().Action(MyAction("Action1.3")).\
+                                    Root().Sequence("Sequence2").\
+                                        Action(MyAction("Action2.1")).\
+                                        Action(MyAction("Action2.2")).\
+                                    Build()
+```
+
+### Glossary
+
+Tree Node Control:
+
+- BehaviourTreeBuilder(printDebugs): creates a BehaviourTreeBuilder, pass True as an argument if you want to print debug logs. 
+- Root(): adds the next node to the root of the tree.
+- Parent(): adds the next node to the parent of the current node.
+- Build(): builds and returns the behaviour tree instance.
+
+Composites:
+
+- Sequence
+- Selector
+- Parallel
+
+Decorators:
+
+- EternalGuard
+- FailureIsRunning
+- FailureIsSuccess
+- RunningIsFailure
+- RunningIsSuccess
+- SuccessIsFailure
+- SuccessIsRunning
+- Inverter
+- Oneshot
+- StatusToBlackboard
+- Timeout
+
+Actions (Leaf Nodes):
+
+- Action(): pass as an argument your custom Behaviour class 
+
+```python
+class MyAction(Behaviour):
+    def __init__(self, name):
+        super(MyAction, self).__init__(name)
+        pass
+
+    def setup(self):
+        self.logger.debug("%s[MyAction::setup()]" % self.name)
+
+    def initialise(self):
+        self.logger.debug("%s[MyAction::initialise()]" % self.name)
+
+    def update(self):
+        return Status.SUCCESS
+
+    def terminate(self, new_status):
+        self.logger.debug("%s[MyAction::terminate().terminate()][%s->%s]" % (self.name, self.status, new_status))
+```
+
 ## Docs and Demos
 
 Core API documentation (also includes some explanation concerning the demo scripts):
-
-[![devel][docs-devel-image]][docs-devel] [![2.1.x][docs-2.1.x-image]][docs-2.1.x] [![0.7.x][docs-0.7.x-image]][docs-0.7.x] [![0.6.x][docs-0.6.x-image]][docs-0.6.x]
-
 If you're really looking for something more edifying than hello world examples, walk through the [ros tutorials](https://py-trees-ros-tutorials.readthedocs.io/en/release-2.0.x/index.html) which incrementally step through the process of building a scenario handling layer for a robot.
 
-There are also runtime visualisation tools - refer to the [py_trees_ros_viewer/README](https://github.com/splintered-reality/py_trees_ros_viewer/blob/devel/README.md) as an example implementation of the underlying [py_trees_js](https://github.com/splintered-reality/py_trees_js) library. 
+There are also runtime visualisation tools - refer to the [py_trees_ros_viewer/README](https://github.com/splintered-reality/py_trees_ros_viewer/blob/devel/README.md) as an example implementation of the underlying [py_trees_js](https://github.com/splintered-reality/py_trees_js) library.
 
-## Releases
+## Compatibility
 
-* `0.y.x` - first open source releases
-* `1.0.x` - first stable release
-* `1.1.x` - improvements
-* `1.2.x` - improvements
-* `2.0.x` - blackboards v2 with namespaces, access permissions and key tracking
-* `2.1.x` - Chooser deprecated, api housekeeping
+This module is compatible with any version equall or greater than [IronPython 3.4.1](https://ironpython.net/) and its Python equivalent which is Python 3.4.
 
-| | Devel | 2.1.x | 2.0.x | 1.2.x | 0.7.x | 0.6.x |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Sources | [![devel][sources-devel-image]][sources-devel] | [![2.1.x][sources-2.1.x-image]][sources-2.1.x] | [![2.0.x][sources-2.0.x-image]][sources-2.0.x] | [![1.2.x][sources-1.2.x-image]][sources-1.2.x] | [![0.7.x][sources-0.7.x-image]][sources-0.7.x] | [![0.6.x][sources-0.6.x-image]][sources-0.6.x]
-| Compatibility | [![Python 3.6][python36-image]][python36-docs] | [![Python 3.6][python36-image]][python36-docs] | [![Python 3.6][python36-image]][python36-docs] | [![Python 3.6][python36-image]][python36-docs] | [![Python 3.6][python36-image]][python36-docs] | [![Python 2.7][python27-image]][python27-docs]
-| CI | [![devel-Status][devel-build-status-image]][devel-build-status] | [![2.1.x-Status][2.1.x-build-status-image]][2.1.x-build-status] | [![2.0.x-Status][2.0.x-build-status-image]][2.0.x-build-status] | [![1.2.x-Status][1.2.x-build-status-image]][1.2.x-build-status] | [![0.7.x-Status][0.7.x-build-status-image]][0.7.x-build-status] | [![0.6.x-Status][0.6.x-build-status-image]][0.6.x-build-status] 
-| Documentation | [![devel-Docs][rtd-devel-image]][docs-devel] | [![2.1.x-Docs][rtd-2.1.x-image]][docs-2.1.x] | [![2.0.x-Docs][rtd-2.0.x-image]][docs-2.0.x] | [![1.2.x-Docs][rtd-1.2.x-image]][docs-1.2.x] | [![0.7.x-Docs][rtd-0.7.x-image]][docs-0.7.x] | [![0.6.x-Docs][rtd-0.6.x-image]][docs-0.6.x]
+*__Note__: IronPython3.4.1 support some Python 3.6 features which are listed in its website and [repository](https://github.com/IronLanguages/ironpython3).*
 
-## Installation
+## Dependencies
 
-From [ppa](https://launchpad.net/~d-stonier/+archive/ubuntu/snorriheim) on Ubuntu/Bionic:
-
-```
-$ sudo apt install python3-py-trees
-```
-
-From [pypi](https://pypi.python.org/pypi/py_trees):
-
-```
-$ pip3 install py_trees
-```
-
-In a Python Virtual Environment:
-
-```
-$ git clone https://github.com/splintered-reality/py_trees
-$ cd py_trees
-$ source ./venv.bash
-```
-
-Build your own python3 deb:
-
-```
-$ git clone https://github.com/splintered-reality/py_trees
-$ cd py_trees
-$ source ./venv.bash
-$ make deb
-```
-
-From the ROS2 ecosystem:
-
-```
-$ sudo apt install ros-<rosdistro>-py-trees
-```
-
-## PyTrees-ROS Ecosystem
-
-See the `py_trees_ros` [README](https://github.com/splintered-reality/py_trees_ros/blob/devel/README.md) for the latest information on pytrees packages in the ROS ecosystem and their status.
-
-
-[license-image]: https://img.shields.io/badge/License-BSD%203--Clause-orange.svg?style=plastic
-[license]: LICENSE
-
-[python36-image]: https://img.shields.io/badge/python-3.6-green.svg?style=plastic
-[python36-docs]: https://docs.python.org/3.6/
-[python27-image]: https://img.shields.io/badge/python-2.7-green.svg?style=plastic
-[python27-docs]: https://docs.python.org/2.7/
-
-[devel-build-status-image]: https://img.shields.io/circleci/build/github/splintered-reality/py_trees?branch=devel&style=plastic
-[devel-build-status]: https://circleci.com/gh/splintered-reality/py_trees/tree/devel
-[2.1.x-build-status-image]: https://img.shields.io/circleci/build/github/splintered-reality/py_trees?branch=release%2F2.1.x&style=plastic
-[2.1.x-build-status]: https://circleci.com/gh/splintered-reality/py_trees/tree/release/2.1.x
-[2.0.x-build-status-image]: https://img.shields.io/circleci/build/github/splintered-reality/py_trees?branch=release%2F2.0.x&style=plastic
-[2.0.x-build-status]: https://circleci.com/gh/splintered-reality/py_trees/tree/release/2.0.x
-[1.3.x-build-status-image]: https://img.shields.io/circleci/build/github/splintered-reality/py_trees?branch=release%2F1.3.x&style=plastic
-[1.3.x-build-status]: https://circleci.com/gh/splintered-reality/py_trees/tree/release/1.3.x
-[1.2.x-build-status-image]: https://img.shields.io/circleci/build/github/splintered-reality/py_trees?branch=release%2F1.2.x&style=plastic
-[1.2.x-build-status]: https://circleci.com/gh/splintered-reality/py_trees/tree/release/1.2.x
-[0.7.x-build-status-image]: https://img.shields.io/circleci/build/github/splintered-reality/py_trees?branch=release%2F0.7.x&style=plastic
-[0.7.x-build-status]: https://circleci.com/gh/splintered-reality/py_trees/tree/release/0.7.x
-[0.6.x-build-status-image]: https://img.shields.io/circleci/build/github/splintered-reality/py_trees?branch=release%2F0.6x&style=plastic
-[0.6.x-build-status]: https://circleci.com/gh/splintered-reality/py_trees/tree/release/0.6.x
-
-[docs-devel]: http://py-trees.readthedocs.io/
-[docs-2.1.x]: http://py-trees.readthedocs.io/en/release-2.1.x/
-[docs-2.0.x]: http://py-trees.readthedocs.io/en/release-2.0.x/
-[docs-1.3.x]: http://py-trees.readthedocs.io/en/release-1.3.x/
-[docs-1.2.x]: http://py-trees.readthedocs.io/en/release-1.2.x/
-[docs-0.7.x]: http://py-trees.readthedocs.io/en/release-0.7.x/
-[docs-0.6.x]: http://py-trees.readthedocs.io/en/release-0.6.x/
-[docs-0.5.x]: http://docs.ros.org/kinetic/api/py_trees/html/
-
-[docs-devel-image]: http://img.shields.io/badge/docs-devel-brightgreen.svg?style=plastic
-[docs-2.1.x-image]: http://img.shields.io/badge/docs-2.1.x-brightgreen.svg?style=plastic
-[docs-2.0.x-image]: http://img.shields.io/badge/docs-2.0.x-brightgreen.svg?style=plastic
-[docs-1.3.x-image]: http://img.shields.io/badge/docs-1.3.x-brightgreen.svg?style=plastic
-[docs-1.2.x-image]: http://img.shields.io/badge/docs-1.2.x-brightgreen.svg?style=plastic
-[docs-0.7.x-image]: http://img.shields.io/badge/docs-0.7.x-brightgreen.svg?style=plastic
-[docs-0.6.x-image]: http://img.shields.io/badge/docs-0.6.x-brightgreen.svg?style=plastic
-[docs-0.5.x-image]: http://img.shields.io/badge/docs-0.5.x-brightgreen.svg?style=plastic
-
-[rtd-devel-image]: https://readthedocs.org/projects/py-trees/badge/?version=devel&style=plastic
-[rtd-2.1.x-image]: https://readthedocs.org/projects/py-trees/badge/?version=release-2.1.x&style=plastic
-[rtd-2.0.x-image]: https://readthedocs.org/projects/py-trees/badge/?version=release-2.0.x&style=plastic
-[rtd-1.3.x-image]: https://readthedocs.org/projects/py-trees/badge/?version=release-1.3.x&style=plastic
-[rtd-1.2.x-image]: https://readthedocs.org/projects/py-trees/badge/?version=release-1.2.x&style=plastic
-[rtd-0.7.x-image]: https://readthedocs.org/projects/py-trees/badge/?version=release-0.7.x&style=plastic
-[rtd-0.6.x-image]: https://readthedocs.org/projects/py-trees/badge/?version=release-0.6.x&style=plastic
-[rtd-0.5.x-image]: https://readthedocs.org/projects/py-trees/badge/?version=release-0.5.x&style=plastic
-[not-available-docs-image]: http://img.shields.io/badge/docs-n/a-yellow.svg?style=plastic
-
-[sources-devel]: https://github.com/splintered-reality/py_trees/tree/devel
-[sources-2.1.x]: https://github.com/splintered-reality/py_trees/tree/release/2.1.x
-[sources-2.0.x]: https://github.com/splintered-reality/py_trees/tree/release/2.0.x
-[sources-1.3.x]: https://github.com/splintered-reality/py_trees/tree/release/1.3.x
-[sources-1.2.x]: https://github.com/splintered-reality/py_trees/tree/release/1.2.x
-[sources-0.7.x]: https://github.com/splintered-reality/py_trees/tree/release/0.7.x
-[sources-0.6.x]: https://github.com/splintered-reality/py_trees/tree/release/0.6.x
-[sources-0.5.x]: https://github.com/splintered-reality/py_trees/tree/release/0.5.x
-
-[sources-devel-image]: http://img.shields.io/badge/sources-devel-blue.svg?style=plastic
-[sources-2.1.x-image]: http://img.shields.io/badge/sources-2.1.x-blue.svg?style=plastic
-[sources-2.0.x-image]: http://img.shields.io/badge/sources-2.0.x-blue.svg?style=plastic
-[sources-1.3.x-image]: http://img.shields.io/badge/sources-1.3.x-blue.svg?style=plastic
-[sources-1.2.x-image]: http://img.shields.io/badge/sources-1.2.x-blue.svg?style=plastic
-[sources-0.7.x-image]: http://img.shields.io/badge/sources-0.7.x-blue.svg?style=plastic
-[sources-0.6.x-image]: http://img.shields.io/badge/sources-0.6.x-blue.svg?style=plastic
-[sources-0.5.x-image]: http://img.shields.io/badge/sources-0.5.x-blue.svg?style=plastic
+* IronPython dependencies 
+  * [IronPython 3.4.1 site](https://ironpython.net/)
+  * [IronPython 3.4.1 repository](https://github.com/IronLanguages/ironpython3)
+* [PyTrees 2.1.6 repository](https://github.com/splintered-reality/py_trees/tree/release/2.1.x)
