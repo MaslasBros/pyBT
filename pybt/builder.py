@@ -3,11 +3,18 @@ from . import *
 class BehaviourTreeBuilder():
     def __init__(self, showDebugs = False):
         self.showDebugs = showDebugs # type: bool
+        """Whether to print debug logs in the console"""
 
-        self.root = None # type: behaviour.Behaviour
-        self.currentNode = None # type: behaviour.Behaviour
-        self.parent = None # type: behaviour.Behaviour
-        self.currentDecorator = None # type: nodes.decorator.Decorator
+        self._root = None # type: behaviour.Behaviour
+        """The root of the tree"""
+
+        self._currentNode = None # type: behaviour.Behaviour
+        """Current behaviour tree building node"""
+        
+        self._parent = None # type: behaviour.Behaviour
+        """The parent of the currentNode"""
+        self._currentDecorator = None # type: nodes.decorator.Decorator
+        """The current decorator of the currentNode"""
         pass
 
     def _internalNodeHandler(self, newNode):
@@ -21,19 +28,19 @@ class BehaviourTreeBuilder():
         """
         self._printNode(newNode)
 
-        if self.currentNode is None:
-            self.currentNode = newNode
+        if self._currentNode is None:
+            self._currentNode = newNode
         else:
-            self.parent = self.currentNode
-            if isinstance(self.currentNode, nodes.composite.Composite):
-                self.currentNode.add_child(newNode)
-            elif isinstance(self.currentNode, nodes.decorator.Decorator):
-                self.currentNode.add_decorated(newNode)
+            self._parent = self._currentNode
+            if isinstance(self._currentNode, nodes.composite.Composite):
+                self._currentNode.add_child(newNode)
+            elif isinstance(self._currentNode, nodes.decorator.Decorator):
+                self._currentNode.add_decorated(newNode)
             
-            self.currentNode = newNode
+            self._currentNode = newNode
 
-        if self.root is None:
-            self.root = self.currentNode
+        if self._root is None:
+            self._root = self._currentNode
     
     def _printNode(self, node  : object):
         """
@@ -46,7 +53,7 @@ class BehaviourTreeBuilder():
         if not self.showDebugs:
             return
 
-        print("Added {0} named {1} -> {2}".format(node.__class__.__name__, node.name, self.currentNode.name if self.currentNode is not None else "None"))
+        print("Added {0} named {1} -> {2}".format(node.__class__.__name__, node.name, self._currentNode.name if self._currentNode is not None else "None"))
 
 #region ACCESS
     def Root(self):
@@ -54,7 +61,7 @@ class BehaviourTreeBuilder():
         Returns the root node of the tree.
         """
         
-        self.currentNode = self.root
+        self._currentNode = self._root
         return self
 
     def Parent(self):
@@ -62,7 +69,7 @@ class BehaviourTreeBuilder():
         Returns the parent of the current node.
         """
 
-        self.currentNode = self.parent
+        self._currentNode = self._parent
         return self
 
     def Build(self):
@@ -70,7 +77,7 @@ class BehaviourTreeBuilder():
         Builds and returns a Behaviour Tree instance. 
         """
         
-        return trees.BehaviourTree(self.root)
+        return trees.BehaviourTree(self._root)
 #endregion
 
 #region COMPOSITES
@@ -244,13 +251,13 @@ class BehaviourTreeBuilder():
             SyntaxError (:class:`SyntaxError`): If an Action node is the root of the behaviour.
         """
         
-        if self.root is None:
+        if self._root is None:
             raise SyntaxError("An action node can't be the root node to a Behaviour tree.")
 
-        if isinstance(self.currentNode, nodes.composite.Composite):
-                self.currentNode.add_child(actionClass)
-        elif isinstance(self.currentNode, nodes.decorator.Decorator):
-            self.currentNode.add_decorated(actionClass)
+        if isinstance(self._currentNode, nodes.composite.Composite):
+                self._currentNode.add_child(actionClass)
+        elif isinstance(self._currentNode, nodes.decorator.Decorator):
+            self._currentNode.add_decorated(actionClass)
 
         self._printNode(actionClass)
         return self
