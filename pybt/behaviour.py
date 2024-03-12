@@ -60,7 +60,8 @@ class Behaviour(object):
     """
     def __init__(
         self,
-        name: typing.Union[str, common.Name]=common.Name.AUTO_GENERATED
+        name: typing.Union[str, common.Name]=common.Name.AUTO_GENERATED,
+        logger = None
     ):
         if not name or name == common.Name.AUTO_GENERATED:
             name = self.__class__.__name__
@@ -68,13 +69,14 @@ class Behaviour(object):
             raise TypeError("a behaviour name should be a string, but you passed in {}".format(type(name)))
         self.id = uuid.uuid4()  # used to uniquely identify this node (helps with removing children from a tree)
         self.name = name #type:str
-        self.blackboards = [] #List[blackboard.Client]
+        self.blackboards = [] #List[client.Client]
+        self.client = None # type: Client
         self.qualified_name = "{}/{}".format(self.__class__.__qualname__, self.name)  # convenience
         self.status = common.Status.INVALID
         self.iterator = self.tick()
         self.parent = None  # will get set if a behaviour is added to a composite
         self.children = []  # only set by composite behaviours
-        self.logger = logging.Logger(name)
+        self.logger = logging.Logger(name, logger)
         self.feedback_message = ""  # useful for debugging, or human readable updates, but not necessary to implement
         self.blackbox_level = common.BlackBoxLevel.NOT_A_BLACKBOX
 
@@ -210,12 +212,22 @@ class Behaviour(object):
         if name is None:
             count = len(self.blackboards)
             name = self.name if (count == 0) else self.name + "-{}".format(count)
-        new_blackboard = Client(
-            name=name,
-            namespace=namespace
-        )
+
+        new_blackboard = Client(name = name, namespace = namespace)
+
         self.blackboards.append(new_blackboard)
         return new_blackboard
+    
+    def attach_existing_blackboard_client(self, externalClient):
+        """
+        Attaches a blackboard to this behaviour.
+
+        Args:
+            existingBlackboard: the externally created blackboard
+        """
+        
+        self.blackboards.append(externalClient)
+        self.client = externalClient
 
     ############################################
     # Public - lifecycle API
@@ -380,3 +392,9 @@ class Behaviour(object):
             :class:`~py_trees.behaviour.Behaviour` or :obj:`None`: child behaviour, itself or :obj:`None` if its status is :data:`~py_trees.common.Status.INVALID`
         """
         return self if self.status != common.Status.INVALID else None
+
+    def add_logger(self, logger):
+        """
+        Assigns the passed logger to this node
+        """
+        self.logger = logging.Logger(self.name, logger)

@@ -43,7 +43,6 @@ CONTINUOUS_TICK_TOCK = -1
 # Methods
 ##############################################################################
 
-
 def setup(root: behaviour.Behaviour,
           timeout: typing.Union[float, common.Duration]=common.Duration.INFINITE,
           visitor: VisitorBase=None,

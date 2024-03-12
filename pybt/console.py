@@ -47,83 +47,55 @@ colours = [bold, dim, underlined, blink,
            ]
 """List of all available colours."""
 
-def pretty_print(msg, colour=white):
-        sys.stdout.write(msg)
-
-def pretty_println(msg, colour=white):
-        sys.stdout.write(msg)
-
 ##############################################################################
 # Console
 ##############################################################################
 
-def banner(msg):
-    print(green + "\n" + 80 * "*" + reset)
-    print(green + "* " + bold_white + msg.center(80) + reset)
-    print(green + 80 * "*" + "\n" + reset)
-
-
-def debug(msg):
-    print(green + msg + reset)
-
-
-def warning(msg):
-    print(yellow + msg + reset)
-
-
-def info(msg):
-    print(msg)
-
-
-def error(msg):
-    print(red + msg + reset)
-
-
-def logdebug(message):
+def logdebug(message, logger):
     '''
     Prefixes ``[DEBUG]`` and colours the message green.
 
     Args:
         message (:obj:`str`): message to log.
     '''
-    print(green + "[DEBUG] " + message + reset)
+    logger.Log("[DEBUG] " + message)
 
 
-def loginfo(message):
+def loginfo(message, logger):
     '''
     Prefixes ``[ INFO]`` to the message.
 
     Args:
         message (:obj:`str`): message to log.
     '''
-    print("[ INFO] " + message)
+    logger.Log("[ INFO] " + message)
 
 
-def logwarn(message):
+def logwarn(message, logger):
     '''
     Prefixes ``[ WARN]`` and colours the message yellow.
 
     Args:
         message (:obj:`str`): message to log.
     '''
-    print(yellow + "[ WARN] " + message + reset)
+    logger.LogWarning("[ WARN] " + message)
 
 
-def logerror(message):
+def logerror(message, logger):
     '''
     Prefixes ``[ERROR]`` and colours the message red.
 
     Args:
         message (:obj:`str`): message to log.
     '''
-    print(red + "[ERROR] " + message + reset)
+    logger.LogError("[ERROR] " + message)
 
 
-def logfatal(message):
+def logfatal(message, logger):
     '''
     Prefixes ``[FATAL]`` and colours the message bold red.
 
     Args:
         message (:obj:`str`): message to log.
     '''
-    print(bold_red + "[FATAL] " + message + reset)
+    logger.LogError("[FATAL] " + message)

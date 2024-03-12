@@ -7,7 +7,7 @@
 ##############################################################################
 
 """
-This is the node-level namespace of the pybt.composites package.
+This is the nodes package.
 """
 
 #Composites

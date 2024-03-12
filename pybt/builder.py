@@ -1,10 +1,23 @@
 from . import *
 
 class BehaviourTreeBuilder():
-    def __init__(self, showDebugs = False):
-        self.showDebugs = showDebugs # type: bool
-        """Whether to print debug logs in the console"""
+    """
+    Base class providing the API to build a behaviour tree.
+    """
+    
+    def __init__(self, logger, btClient):
+        """
+        Creates a BehaviourTreeBuidler instance that provides the base API for BehaviourTree building.
 
+        Args:
+            logger (:class:`UnityEngine.CoreModule`): The reference that the BehaviourTree will use to print strings into the UnityConsole `_Debug`
+            btClient (:class:`bb.client.Client`): The Client the Behaviour Tree will have attached.
+        """
+        
+        self._logger = logger
+        """Logger reference"""
+        self._btClient = btClient # type: bb.client.Client
+        """The BehaviourTree attached client"""
         self._root = None # type: behaviour.Behaviour
         """The root of the tree"""
 
@@ -17,7 +30,7 @@ class BehaviourTreeBuilder():
         """The current decorator of the currentNode"""
         pass
 
-    def _internalNodeHandler(self, newNode):
+    def _internalNodeHandler(self, newNode: behaviour.Behaviour):
         """
         Prints the newly added node in the console.
         Adds the passed node as a child of the previous Composite or Decorator.
@@ -39,10 +52,12 @@ class BehaviourTreeBuilder():
             
             self._currentNode = newNode
 
+        newNode.add_logger(self._logger)
+
         if self._root is None:
             self._root = self._currentNode
     
-    def _printNode(self, node  : object):
+    def _printNode(self, node: behaviour.Behaviour):
         """
         Prints the passed node in a pretty format in the console if self.showDebugs is True.
 
@@ -50,10 +65,10 @@ class BehaviourTreeBuilder():
             node (:class:`~pybt.behaviour.Behaviour`): The node to print
         """
         
-        if not self.showDebugs:
+        if self._logger is None:
             return
 
-        print("Added {0} named {1} -> {2}".format(node.__class__.__name__, node.name, self._currentNode.name if self._currentNode is not None else "None"))
+        self._logger.Log("Added {0} named {1} -> {2}".format(node.__class__.__name__, node.name, self._currentNode.name if self._currentNode is not None else "NaN"))
 
 #region ACCESS
     def Root(self):
@@ -81,26 +96,28 @@ class BehaviourTreeBuilder():
 #endregion
 
 #region COMPOSITES
-    def Sequence(self, name):
+    def Sequence(self, name, memory = True):
         """
         Adds a sequence Composite to the tree.
 
         Args:
             name (:class:`str`): The node name.
+            memory (:value:`bool`): Whether to activate the memory feature of the Sequence node or not
         """
 
-        self._internalNodeHandler(nodes.sequence.Sequence(name = name, memory = True))
+        self._internalNodeHandler(nodes.sequence.Sequence(name = name, memory = memory))
         return self
 
-    def Selector(self, name):
+    def Selector(self, name, memory = True):
         """
         Adds a selector Composite to the tree. 
         
         Args:
             name (:class:`str`): The node name.
+            memory (:value:`bool`): Whether to activate the memory feature of the Selector node or not
         """
 
-        self._internalNodeHandler(nodes.selector.Selector(name = name, memory = True))
+        self._internalNodeHandler(nodes.selector.Selector(name = name, memory = memory))
         return self
 
     def Parallel(self, name, policy = common.ParallelPolicy.SuccessOnAll()):
@@ -240,7 +257,7 @@ class BehaviourTreeBuilder():
         return self  
 #endregion
 
-    def Action(self, actionClass):
+    def Action(self, actionClass: behaviour.Behaviour):
         """
         Adds an Action (leaf) to the tree. 
         
@@ -253,6 +270,9 @@ class BehaviourTreeBuilder():
         
         if self._root is None:
             raise SyntaxError("An action node can't be the root node to a Behaviour tree.")
+
+        actionClass.add_logger(self._logger)
+        actionClass.attach_existing_blackboard_client(self._btClient)
 
         if isinstance(self._currentNode, nodes.composite.Composite):
                 self._currentNode.add_child(actionClass)

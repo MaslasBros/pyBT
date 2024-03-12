@@ -18,8 +18,8 @@ class Level(IntEnum):
     ERROR = 3
 
 
-# module variable
-level = Level.INFO
+# module variable - unused in pybt
+level = Level.DEBUG
 
 class Logger(object):
     """
@@ -27,23 +27,18 @@ class Logger(object):
     :vartype override: bool
     """
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, logger = None):
         self.prefix = '{:<20}'.format(name.replace("\n", " ")) + " : " if name else ""
+        self.logger = logger
 
     def debug(self, msg):
-        global level
-        if level < Level.INFO:
-            console.logdebug(self.prefix + msg)
+        console.logdebug(self.prefix + msg, self.logger)
 
     def info(self, msg):
-        global level
-        if level < Level.WARN:
-            console.loginfo(self.prefix + msg)
+        console.loginfo(self.prefix + msg, self.logger)
 
     def warning(self, msg):
-        global level
-        if level < Level.ERROR:
-            console.logwarn(self.prefix + msg)
+        console.logwarn(self.prefix + msg, self.logger)
 
     def error(self, msg):
-        console.logerror(self.prefix + msg)
+        console.logerror(self.prefix + msg, self.logger)

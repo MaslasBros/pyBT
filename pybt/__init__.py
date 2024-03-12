@@ -7,7 +7,7 @@
 ##############################################################################
 
 """
-This is the top-level namespace of the py_trees package.
+This is the top-level namespace of the pybt package.
 """
 ##############################################################################
 # Imports
@@ -28,5 +28,4 @@ from . import trees  # noqa
 from . import utilities  # noqa
 from . import version  # noqa
 from . import visitors # noqa
-from . import _examples # noqa
 from . import builder # noqa
