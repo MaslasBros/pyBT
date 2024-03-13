@@ -23,11 +23,9 @@ class BehaviourTreeBuilder():
 
         self._currentNode = None # type: behaviour.Behaviour
         """Current behaviour tree building node"""
-        
-        self._parent = None # type: behaviour.Behaviour
-        """The parent of the currentNode"""
-        self._currentDecorator = None # type: nodes.decorator.Decorator
-        """The current decorator of the currentNode"""
+
+        self._connections = {}
+        """Stores the connections between nodes and their parent.\n"""
         pass
 
     def _internalNodeHandler(self, newNode: behaviour.Behaviour):
@@ -39,24 +37,55 @@ class BehaviourTreeBuilder():
         Args:
             newNode (:class:`~pybt.behaviour.Behaviour`): The new node to add in the tree
         """
-        self._printNode(newNode)
 
+        #Manage the new node
         if self._currentNode is None:
             self._currentNode = newNode
+            self._addToConnections(self._currentNode.name, self._currentNode)
         else:
-            self._parent = self._currentNode
             if isinstance(self._currentNode, nodes.composite.Composite):
                 self._currentNode.add_child(newNode)
             elif isinstance(self._currentNode, nodes.decorator.Decorator):
                 self._currentNode.add_decorated(newNode)
             
+            _parent = self._currentNode
             self._currentNode = newNode
 
+            self._addToConnections(self._currentNode.name, _parent)
+
+        #Register logger to the node
         newNode.add_logger(self._logger)
 
+        #Create the root of the tree
         if self._root is None:
             self._root = self._currentNode
+
+        self._printNode(newNode)
     
+    def _addToConnections(self, childName:str, parentNode: behaviour.Behaviour):
+        """
+        Adds the passed name and node as a key-value pair in the _connections dictionary.
+
+        Args:
+            childName (:class:`str`): The name of the child
+            parentNode (:class: `~pybt.behaviour.Behaviour`): The parent node
+        """
+        
+        self._connections[childName.lower()] = parentNode
+
+    def _retrieveFromConnections(self, childName:str):
+        """
+        Returns the child node of the passed parent name
+
+        Args:
+            childName (:class:`str`): The child node name
+
+        Returns:
+            The parent node of the passed child name
+        """
+        
+        return self._connections[childName.lower()]
+
     def _printNode(self, node: behaviour.Behaviour):
         """
         Prints the passed node in a pretty format in the console if self.showDebugs is True.
@@ -68,7 +97,8 @@ class BehaviourTreeBuilder():
         if self._logger is None:
             return
 
-        self._logger.Log("Added {0} named {1} -> {2}".format(node.__class__.__name__, node.name, self._currentNode.name if self._currentNode is not None else "NaN"))
+        finalStr = "(Type: {0} Name: {1} -> {2})".format(node.__class__.__name__, node.name, self._retrieveFromConnections(node.name).name)
+        self._logger.Log(finalStr)
 
 #region ACCESS
     def Root(self):
@@ -84,7 +114,7 @@ class BehaviourTreeBuilder():
         Returns the parent of the current node.
         """
 
-        self._currentNode = self._parent
+        self._currentNode = self._retrieveFromConnections(self._currentNode.name)
         return self
 
     def Build(self):
@@ -96,28 +126,28 @@ class BehaviourTreeBuilder():
 #endregion
 
 #region COMPOSITES
-    def Sequence(self, name, memory = True):
+    def Sequence(self, name, enableMemory = True):
         """
         Adds a sequence Composite to the tree.
 
         Args:
             name (:class:`str`): The node name.
-            memory (:value:`bool`): Whether to activate the memory feature of the Sequence node or not
+            enableMemory (:value:`bool`): Whether to activate the memory feature of the Sequence node or not
         """
 
-        self._internalNodeHandler(nodes.sequence.Sequence(name = name, memory = memory))
+        self._internalNodeHandler(nodes.sequence.Sequence(name = name, memory = enableMemory))
         return self
 
-    def Selector(self, name, memory = True):
+    def Selector(self, name, enableMemory = True):
         """
         Adds a selector Composite to the tree. 
         
         Args:
             name (:class:`str`): The node name.
-            memory (:value:`bool`): Whether to activate the memory feature of the Selector node or not
+            enableMemory (:value:`bool`): Whether to activate the memory feature of the Selector node or not
         """
 
-        self._internalNodeHandler(nodes.selector.Selector(name = name, memory = memory))
+        self._internalNodeHandler(nodes.selector.Selector(name = name, memory = enableMemory))
         return self
 
     def Parallel(self, name, policy = common.ParallelPolicy.SuccessOnAll()):
@@ -275,9 +305,10 @@ class BehaviourTreeBuilder():
         actionClass.attach_existing_blackboard_client(self._btClient)
 
         if isinstance(self._currentNode, nodes.composite.Composite):
-                self._currentNode.add_child(actionClass)
+            self._currentNode.add_child(actionClass)
         elif isinstance(self._currentNode, nodes.decorator.Decorator):
             self._currentNode.add_decorated(actionClass)
 
+        self._addToConnections(actionClass.name, self._currentNode)
         self._printNode(actionClass)
         return self
